@@ -27,7 +27,7 @@ export const [injectComboboxContentContext, provideComboboxContentContext]
 import {
   computed,
   onMounted,
-  toRefs,
+  toRef,
 } from 'vue'
 import { injectComboboxRootContext } from './ComboboxRoot.vue'
 import { DismissableLayer } from '@/DismissableLayer'
@@ -40,7 +40,6 @@ const props = withDefaults(defineProps<ComboboxContentImplProps>(), {
 })
 const emits = defineEmits<ComboboxContentImplEmits>()
 
-const { position } = toRefs(props)
 const rootContext = injectComboboxRootContext()
 
 useBodyScrollLock(props.bodyLock)
@@ -75,7 +74,7 @@ const popperStyle = {
   '--radix-combobox-trigger-height': 'var(--radix-popper-anchor-height)',
 }
 
-provideComboboxContentContext({ position })
+provideComboboxContentContext({ position: toRef(props, 'position') })
 </script>
 
 <template>

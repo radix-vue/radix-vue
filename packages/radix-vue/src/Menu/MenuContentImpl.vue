@@ -82,7 +82,6 @@ export interface MenuRootContentProps
 import {
   onUnmounted,
   ref,
-  toRefs,
   watch,
 } from 'vue'
 import { injectMenuContext, injectMenuRootContext } from './MenuRoot.vue'
@@ -110,10 +109,8 @@ const emits = defineEmits<MenuContentImplEmits>()
 const menuContext = injectMenuContext()
 const rootContext = injectMenuRootContext()
 
-const { trapFocus, disableOutsidePointerEvents, loop } = toRefs(props)
-
 useFocusGuards()
-useBodyScrollLock(disableOutsidePointerEvents.value)
+useBodyScrollLock(props.disableOutsidePointerEvents)
 
 const searchRef = ref('')
 const timerRef = ref(0)
@@ -173,7 +170,7 @@ function handleKeyDown(event: KeyboardEvent) {
     document.activeElement as HTMLElement,
     contentElement.value,
     {
-      loop: loop.value,
+      loop: props.loop,
       arrowKeyOptions: 'vertical',
       dir: rootContext?.dir.value,
       focus: true,

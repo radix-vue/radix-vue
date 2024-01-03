@@ -27,7 +27,7 @@ import {
   nextTick,
   onMounted,
   ref,
-  toRefs,
+  toRef,
 } from 'vue'
 import { injectSelectRootContext } from './SelectRoot.vue'
 import { SelectContentDefaultContextValue, injectSelectContentContext } from './SelectContentImpl.vue'
@@ -38,7 +38,6 @@ import {
 } from '@/Primitive'
 
 const props = defineProps<SelectItemProps>()
-const { disabled } = toRefs(props)
 
 const rootContext = injectSelectRootContext()
 const contentContext = injectSelectContentContext(SelectContentDefaultContextValue)
@@ -54,7 +53,7 @@ async function handleSelect(ev?: PointerEvent) {
   if (ev?.defaultPrevented)
     return
 
-  if (!disabled.value) {
+  if (!props.disabled) {
     rootContext.onValueChange(props.value)
     rootContext.onOpenChange(false)
   }
@@ -64,7 +63,7 @@ async function handlePointerMove(event: PointerEvent) {
   await nextTick()
   if (event.defaultPrevented)
     return
-  if (disabled.value) {
+  if (props.disabled) {
     contentContext.onItemLeave?.()
   }
   else {
@@ -114,7 +113,7 @@ onMounted(() => {
 
 provideSelectItemContext({
   value: props.value,
-  disabled,
+  disabled: toRef(props, 'disabled'),
   textId,
   isSelected,
   onItemTextChange: (node) => {

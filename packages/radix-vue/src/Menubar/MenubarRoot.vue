@@ -1,7 +1,8 @@
 <script lang="ts">
 import type { Ref } from 'vue'
 import type { Direction } from '../shared/types'
-import { createContext, useCollection, useDirection } from '@/shared'
+import { createContext, useCollection } from '@/shared'
+import { useConfig } from '@/ConfigProvider'
 
 export interface MenubarRootProps {
   modelValue?: string
@@ -27,7 +28,7 @@ export const [injectMenubarRootContext, provideMenubarRootContext]
 </script>
 
 <script setup lang="ts">
-import { ref, toRefs } from 'vue'
+import { computed, ref, toRef } from 'vue'
 import { Primitive, usePrimitiveElement } from '@/Primitive'
 import { RovingFocusGroup } from '@/RovingFocus'
 import { useVModel } from '@vueuse/core'
@@ -48,12 +49,13 @@ const modelValue = useVModel(props, 'modelValue', emit, {
 
 const currentTabStopId = ref<string | null>(null)
 
-const { dir: propDir, loop } = toRefs(props)
-const dir = useDirection(propDir)
+const config = useConfig()
+const dir = computed(() => props.dir || config.dir.value)
+
 provideMenubarRootContext({
   modelValue,
   dir,
-  loop,
+  loop: toRef(props, 'loop'),
   onMenuOpen: (value) => {
     modelValue.value = value
     currentTabStopId.value = value

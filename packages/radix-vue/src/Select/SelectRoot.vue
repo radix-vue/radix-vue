@@ -1,7 +1,8 @@
 <script lang="ts">
 import type { Ref, VNode } from 'vue'
 import type { DataOrientation, Direction } from '../shared/types'
-import { createContext, useDirection, useFormControl, useId } from '@/shared'
+import { createContext, useFormControl, useId } from '@/shared'
+import { useConfig } from '@/ConfigProvider'
 
 export interface SelectRootProps {
   open?: boolean
@@ -51,7 +52,7 @@ export const [injectSelectNativeOptionsContext, provideSelectNativeOptionsContex
 </script>
 
 <script setup lang="ts">
-import { computed, ref, toRefs } from 'vue'
+import { computed, ref, toRef } from 'vue'
 import BubbleSelect from './BubbleSelect.vue'
 import { PopperRoot } from '@/Popper'
 import { useVModel } from '@vueuse/core'
@@ -83,8 +84,9 @@ const triggerPointerDownPosRef = ref({
 })
 const valueElementHasChildren = ref(false)
 
-const { required, disabled, dir: propDir } = toRefs(props)
-const dir = useDirection(propDir)
+const config = useConfig()
+const dir = computed(() => props.dir || config.dir.value)
+
 provideSelectRootContext({
   triggerElement,
   onTriggerChange: (node) => {
@@ -104,13 +106,13 @@ provideSelectRootContext({
     modelValue.value = value
   },
   open,
-  required,
+  required: toRef(props, 'required'),
   onOpenChange: (value) => {
     open.value = value
   },
   dir,
   triggerPointerDownPosRef,
-  disabled,
+  disabled: toRef(props, 'disabled'),
 })
 
 const isFormControl = useFormControl(triggerElement)

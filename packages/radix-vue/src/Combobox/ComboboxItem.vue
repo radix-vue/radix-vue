@@ -31,7 +31,6 @@ import {
   nextTick,
   onMounted,
   ref,
-  toRefs,
 } from 'vue'
 import { injectComboboxRootContext } from './ComboboxRoot.vue'
 import { injectComboboxGroupContext } from './ComboboxGroup.vue'
@@ -44,8 +43,6 @@ import isEqual from 'fast-deep-equal'
 
 const props = defineProps<ComboboxItemProps<T>>()
 const emits = defineEmits<ComboboxItemEmits<T>>()
-
-const { disabled } = toRefs(props)
 
 const rootContext = injectComboboxRootContext()
 const groupContext = injectComboboxGroupContext({ id: '', options: ref([]) })
@@ -72,7 +69,7 @@ async function handleSelect(ev: SelectEvent<T>) {
   if (ev?.defaultPrevented)
     return
 
-  if (!disabled.value && ev)
+  if (!props.disabled && ev)
     rootContext!.onValueChange(props.value)
 }
 

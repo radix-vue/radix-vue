@@ -1,11 +1,12 @@
 <script lang="ts">
 import type { Ref } from 'vue'
 import type { PrimitiveProps } from '@/Primitive'
-import { createContext, useCollection, useDirection } from '@/shared'
+import { createContext, useCollection } from '@/shared'
 import type {
   Direction,
   Orientation,
 } from './utils'
+import { useConfig } from '@/ConfigProvider'
 
 export interface RovingFocusGroupProps extends PrimitiveProps {
   /**
@@ -47,7 +48,7 @@ export const [injectRovingFocusGroupContext, provideRovingFocusGroupContext]
 </script>
 
 <script setup lang="ts">
-import { ref, toRefs } from 'vue'
+import { computed, ref, toRef } from 'vue'
 import { useVModel } from '@vueuse/core'
 import {
   Primitive,
@@ -64,8 +65,10 @@ const props = withDefaults(defineProps<RovingFocusGroupProps>(), {
   orientation: undefined,
 })
 const emits = defineEmits<RovingFocusGroupEmits>()
-const { loop, orientation, dir: propDir } = toRefs(props)
-const dir = useDirection(propDir)
+
+const config = useConfig()
+const dir = computed(() => props.dir || config.dir.value)
+
 const currentTabStopId = useVModel(props, 'currentTabStopId', emits, {
   defaultValue: props.defaultCurrentTabStopId,
   passive: (props.currentTabStopId === undefined) as false,
@@ -112,9 +115,9 @@ function handleFocus(event: FocusEvent) {
 }
 
 provideRovingFocusGroupContext({
-  loop,
+  loop: toRef(props, 'loop'),
   dir,
-  orientation,
+  orientation: toRef(props, 'orientation'),
   currentTabStopId,
   onItemFocus: (tabStopId) => {
     currentTabStopId.value = tabStopId

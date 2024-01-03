@@ -1,7 +1,8 @@
 <script lang="ts">
 import type { Ref } from 'vue'
 import type { Direction } from '../shared/types'
-import { createContext, useDirection, useId } from '@/shared'
+import { createContext, useId } from '@/shared'
+import { useConfig } from '@/ConfigProvider'
 
 export interface DropdownMenuRootProps {
   open?: boolean
@@ -29,7 +30,7 @@ export const [injectDropdownMenuRootContext, provideDropdownMenuRootContext]
 </script>
 
 <script setup lang="ts">
-import { ref, toRefs } from 'vue'
+import { computed, ref, toRef } from 'vue'
 import { useVModel } from '@vueuse/core'
 import { MenuRoot } from '@/Menu'
 
@@ -46,8 +47,8 @@ const open = useVModel(props, 'open', emit, {
 
 const triggerElement = ref<HTMLElement>()
 
-const { modal, dir: propDir } = toRefs(props)
-const dir = useDirection(propDir)
+const config = useConfig()
+const dir = computed(() => props.dir || config.dir.value)
 provideDropdownMenuRootContext({
   open,
   onOpenChange: (value) => {
@@ -59,7 +60,7 @@ provideDropdownMenuRootContext({
   triggerId: useId(),
   triggerElement,
   contentId: useId(),
-  modal,
+  modal: toRef(props, 'modal'),
   dir,
 })
 </script>

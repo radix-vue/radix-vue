@@ -2,7 +2,8 @@
 import type { Ref } from 'vue'
 import type { PrimitiveProps } from '@/Primitive'
 import type { DataOrientation, Direction } from '../shared/types'
-import { createContext, useDirection, useId } from '@/shared'
+import { createContext, useId } from '@/shared'
+import { useConfig } from '@/ConfigProvider'
 
 export interface TabsRootContext {
   modelValue: Ref<string | undefined>
@@ -42,7 +43,7 @@ export const [injectTabsRootContext, provideTabsRootContext]
 </script>
 
 <script setup lang="ts">
-import { ref, toRefs } from 'vue'
+import { computed, ref, toRef } from 'vue'
 import { useVModel } from '@vueuse/core'
 import { Primitive } from '@/Primitive'
 
@@ -51,8 +52,9 @@ const props = withDefaults(defineProps<TabsRootProps>(), {
   activationMode: 'automatic',
 })
 const emits = defineEmits<TabsRootEmits>()
-const { orientation, dir: propDir } = toRefs(props)
-const dir = useDirection(propDir)
+
+const config = useConfig()
+const dir = computed(() => props.dir || config.dir.value)
 
 const modelValue = useVModel(props, 'modelValue', emits, {
   defaultValue: props.defaultValue,
@@ -66,7 +68,7 @@ provideTabsRootContext({
   changeModelValue: (value: string) => {
     modelValue.value = value
   },
-  orientation,
+  orientation: toRef(props, 'orientation'),
   dir,
   activationMode: props.activationMode,
   baseId: useId(),

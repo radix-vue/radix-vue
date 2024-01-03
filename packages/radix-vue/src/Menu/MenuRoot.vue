@@ -1,7 +1,8 @@
 <script lang="ts">
 import type { Ref } from 'vue'
 import type { Direction } from './utils'
-import { createContext, useDirection } from '@/shared'
+import { createContext } from '@/shared'
+import { useConfig } from '@/ConfigProvider'
 
 export interface MenuContext {
   open: Ref<boolean>
@@ -33,8 +34,9 @@ export const [injectMenuRootContext, provideMenuRootContext]
 
 <script setup lang="ts">
 import {
+  computed,
   ref,
-  toRefs,
+  toRef,
   watchEffect,
 } from 'vue'
 import { isClient } from '@vueuse/shared'
@@ -46,8 +48,9 @@ const props = withDefaults(defineProps<MenuProps>(), {
   modal: true,
 })
 const emits = defineEmits<{ 'update:open': [payload: boolean] }>()
-const { modal, dir: propDir } = toRefs(props)
-const dir = useDirection(propDir)
+
+const config = useConfig()
+const dir = computed(() => props.dir || config.dir.value)
 
 const open = useVModel(props, 'open', emits)
 
@@ -101,7 +104,7 @@ provideMenuRootContext({
   },
   isUsingKeyboardRef,
   dir,
-  modal,
+  modal: toRef(props, 'modal'),
 })
 </script>
 

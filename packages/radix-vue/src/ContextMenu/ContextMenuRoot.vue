@@ -1,7 +1,8 @@
 <script lang="ts">
 import type { Ref } from 'vue'
 import type { Direction } from '@/shared/types'
-import { createContext, useDirection } from '@/shared'
+import { createContext } from '@/shared'
+import { useConfig } from '@/ConfigProvider'
 
 type ContextMenuRootContext = {
   open: Ref<boolean>
@@ -23,15 +24,15 @@ export const [injectContextMenuRootContext, provideContextMenuRootContext]
 </script>
 
 <script setup lang="ts">
-import { ref, toRefs } from 'vue'
+import { computed, ref, toRef } from 'vue'
 import { MenuRoot } from '@/Menu'
 
 const props = withDefaults(defineProps<ContextMenuRootProps>(), {
   modal: true,
 })
 const emits = defineEmits<ContextMenuRootEmits>()
-const { dir: propDir, modal } = toRefs(props)
-const dir = useDirection(propDir)
+const config = useConfig()
+const dir = computed(() => props.dir || config.dir.value)
 
 const open = ref(false)
 
@@ -42,7 +43,7 @@ provideContextMenuRootContext({
     emits('update:open', value)
   },
   dir,
-  modal,
+  modal: toRef(props, 'modal'),
 })
 </script>
 

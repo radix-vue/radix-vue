@@ -2,7 +2,8 @@
 import type { Ref } from 'vue'
 import type { PrimitiveProps } from '@/Primitive'
 import type { DataOrientation, Direction } from '../shared/types'
-import { createContext, useCollection, useDirection, useFormControl } from '@/shared'
+import { createContext, useCollection, useFormControl } from '@/shared'
+import { useConfig } from '@/ConfigProvider'
 
 export interface SliderRootProps extends PrimitiveProps {
   name?: string
@@ -40,7 +41,7 @@ export const [injectSliderRootContext, provideSliderRootContext]
 <script setup lang="ts">
 import SliderHorizontal from './SliderHorizontal.vue'
 import SliderVertical from './SliderVertical.vue'
-import { ref, toRefs } from 'vue'
+import { computed, ref, toRef } from 'vue'
 import { usePrimitiveElement } from '@/Primitive'
 import { useVModel } from '@vueuse/core'
 import { ARROW_KEYS, PAGE_KEYS, clamp, getClosestValueIndex, getDecimalCount, getNextSortedValues, hasMinStepsBetweenValues, roundValue } from './utils'
@@ -61,8 +62,9 @@ const props = withDefaults(defineProps<SliderRootProps>(), {
 })
 const emits = defineEmits<SliderRootEmits>()
 
-const { min, max, step, minStepsBetweenThumbs, orientation, disabled, dir: propDir } = toRefs(props)
-const dir = useDirection(propDir)
+const config = useConfig()
+const dir = computed(() => props.dir || config.dir.value)
+
 const { createCollection } = useCollection('sliderThumb')
 const { primitiveElement, currentElement } = usePrimitiveElement()
 createCollection(currentElement)
@@ -94,13 +96,13 @@ function handleSlideEnd() {
 }
 
 function updateValues(value: number, atIndex: number, { commit } = { commit: false }) {
-  const decimalCount = getDecimalCount(step.value)
-  const snapToStep = roundValue(Math.round((value - min.value) / step.value) * step.value + min.value, decimalCount)
-  const nextValue = clamp(snapToStep, [min.value, max.value])
+  const decimalCount = getDecimalCount(props.step)
+  const snapToStep = roundValue(Math.round((value - props.min) / props.step) * props.step + props.min, decimalCount)
+  const nextValue = clamp(snapToStep, [props.min, props.max])
 
   const nextValues = getNextSortedValues(modelValue.value, nextValue, atIndex)
 
-  if (hasMinStepsBetweenValues(nextValues, minStepsBetweenThumbs.value * step.value)) {
+  if (hasMinStepsBetweenValues(nextValues, props.minStepsBetweenThumbs * props.step)) {
     valueIndexToChangeRef.value = nextValues.indexOf(nextValue)
     const hasChanged = String(nextValues) !== String(modelValue.value)
     if (hasChanged && commit)
@@ -118,10 +120,10 @@ provideSliderRootContext({
   modelValue,
   valueIndexToChangeRef,
   thumbElements,
-  orientation,
-  min,
-  max,
-  disabled,
+  orientation: toRef(props, 'orientation'),
+  min: toRef(props, 'min'),
+  max: toRef(props, 'max'),
+  disabled: toRef(props, 'disabled'),
 })
 </script>
 

@@ -1,26 +1,5 @@
-import { type Component, type PropType, defineComponent, h } from 'vue'
+import { type Component, type IntrinsicElementAttributes, type PropType, defineComponent, h } from 'vue'
 import { Slot } from './Slot'
-
-export type AsTag =
-  | 'a'
-  | 'button'
-  | 'div'
-  | 'form'
-  | 'h2'
-  | 'h3'
-  | 'img'
-  | 'input'
-  | 'label'
-  | 'li'
-  | 'nav'
-  | 'ol'
-  | 'p'
-  | 'span'
-  | 'svg'
-  | 'ul'
-  | 'template'
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  | ({} & string) // any other string
 
 export interface PrimitiveProps {
   /**
@@ -31,7 +10,7 @@ export interface PrimitiveProps {
   /**
    * @default "div"
    */
-  as?: AsTag | Component
+  as?: keyof IntrinsicElementAttributes | Component
 }
 
 export const Primitive = defineComponent({
@@ -43,7 +22,7 @@ export const Primitive = defineComponent({
       default: false,
     },
     as: {
-      type: [String, Object] as PropType<AsTag | Component>,
+      type: [String, Object] as PropType<keyof IntrinsicElementAttributes | Component>,
       default: 'div',
     },
   },

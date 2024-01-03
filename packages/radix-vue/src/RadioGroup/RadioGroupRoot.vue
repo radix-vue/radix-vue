@@ -2,7 +2,8 @@
 import type { Ref } from 'vue'
 import type { PrimitiveProps } from '@/Primitive'
 import type { DataOrientation, Direction } from '@/shared/types'
-import { createContext, useDirection } from '@/shared'
+import { createContext } from '@/shared'
+import { useConfig } from '@/ConfigProvider'
 
 export interface RadioGroupRootProps extends PrimitiveProps {
   modelValue?: string
@@ -33,7 +34,7 @@ export const [injectRadioGroupRootContext, provideRadioGroupRootContext]
 </script>
 
 <script setup lang="ts">
-import { toRefs } from 'vue'
+import { computed, toRef } from 'vue'
 import { useVModel } from '@vueuse/core'
 import { Primitive } from '@/Primitive'
 import { RovingFocusGroup } from '@/RovingFocus'
@@ -52,18 +53,19 @@ const modelValue = useVModel(props, 'modelValue', emits, {
   passive: (props.modelValue === undefined) as false,
 })
 
-const { disabled, loop, orientation, name, required, dir: propDir } = toRefs(props)
-const dir = useDirection(propDir)
+const config = useConfig()
+const dir = computed(() => props.dir || config.dir.value)
+
 provideRadioGroupRootContext({
   modelValue,
   changeModelValue: (value) => {
     modelValue.value = value
   },
-  disabled,
-  loop,
-  orientation,
-  name: name?.value,
-  required,
+  disabled: toRef(props, 'disabled'),
+  loop: toRef(props, 'loop'),
+  orientation: toRef(props, 'orientation'),
+  name: props.name,
+  required: toRef(props, 'required'),
 })
 </script>
 

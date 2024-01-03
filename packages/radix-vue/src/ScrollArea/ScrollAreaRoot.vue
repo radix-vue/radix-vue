@@ -2,7 +2,8 @@
 import type { Ref } from 'vue'
 import type { PrimitiveProps } from '@/Primitive'
 import type { Direction, ScrollType } from './types'
-import { createContext, useDirection } from '@/shared'
+import { createContext } from '@/shared'
+import { useConfig } from '@/ConfigProvider'
 
 export interface ScrollAreaRootContext {
   type: Ref<ScrollType>
@@ -36,7 +37,7 @@ export interface ScrollAreaRootProps extends PrimitiveProps {
 </script>
 
 <script setup lang="ts">
-import { ref, toRefs } from 'vue'
+import { computed, ref, toRef } from 'vue'
 import {
   Primitive,
   usePrimitiveElement,
@@ -58,12 +59,13 @@ const scrollbarY = ref<HTMLElement>()
 const scrollbarXEnabled = ref(false)
 const scrollbarYEnabled = ref(false)
 
-const { type, dir: propDir, scrollHideDelay } = toRefs(props)
-const dir = useDirection(propDir)
+const config = useConfig()
+const dir = computed(() => props.dir || config.dir.value)
+
 provideScrollAreaRootContext({
-  type,
+  type: toRef(props, 'type'),
   dir,
-  scrollHideDelay,
+  scrollHideDelay: toRef(props, 'scrollHideDelay'),
   scrollArea,
   viewport,
   onViewportChange: (el) => {

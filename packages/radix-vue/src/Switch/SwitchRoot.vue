@@ -28,7 +28,7 @@ export const [injectSwitchRootContext, provideSwitchRootContext]
 </script>
 
 <script setup lang="ts">
-import { computed, toRefs } from 'vue'
+import { computed, toRef } from 'vue'
 import { useVModel } from '@vueuse/core'
 import { Primitive, usePrimitiveElement } from '@/Primitive'
 
@@ -38,7 +38,6 @@ const props = withDefaults(defineProps<SwitchRootProps>(), {
   value: 'on',
 })
 const emit = defineEmits<SwitchRootEmits>()
-const { disabled } = toRefs(props)
 
 const checked = useVModel(props, 'checked', emit, {
   defaultValue: props.defaultChecked,
@@ -46,7 +45,7 @@ const checked = useVModel(props, 'checked', emit, {
 }) as Ref<boolean>
 
 function toggleCheck() {
-  if (disabled.value)
+  if (props.disabled)
     return
 
   checked.value = !checked.value
@@ -59,7 +58,7 @@ const ariaLabel = computed(() => props.id && currentElement.value ? (document.qu
 provideSwitchRootContext({
   checked,
   toggleCheck,
-  disabled,
+  disabled: toRef(props, 'disabled'),
 })
 </script>
 

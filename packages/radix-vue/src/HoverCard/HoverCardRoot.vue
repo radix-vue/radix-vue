@@ -27,7 +27,7 @@ export const [injectHoverCardRootContext, provideHoverCardRootContext]
 </script>
 
 <script setup lang="ts">
-import { ref, toRefs } from 'vue'
+import { ref } from 'vue'
 import { useVModel } from '@vueuse/core'
 import { PopperRoot } from '@/Popper'
 
@@ -38,8 +38,6 @@ const props = withDefaults(defineProps<HoverCardRootProps>(), {
   closeDelay: 300,
 })
 const emit = defineEmits<HoverCardRootEmits>()
-
-const { openDelay, closeDelay } = toRefs(props)
 
 const open = useVModel(props, 'open', emit, {
   defaultValue: props.defaultOpen,
@@ -53,13 +51,20 @@ const isPointerDownOnContentRef = ref(false)
 
 function handleOpen() {
   clearTimeout(closeTimerRef.value)
-  openTimerRef.value = window.setTimeout(() => open.value = true, openDelay.value)
+  openTimerRef.value = window.setTimeout(
+    () => open.value = true,
+    props.openDelay,
+  )
 }
 
 function handleClose() {
   clearTimeout(openTimerRef.value)
-  if (!hasSelectionRef.value && !isPointerDownOnContentRef.value)
-    closeTimerRef.value = window.setTimeout(() => open.value = false, closeDelay.value)
+  if (!hasSelectionRef.value && !isPointerDownOnContentRef.value) {
+    closeTimerRef.value = window.setTimeout(
+      () => open.value = false,
+      props.closeDelay,
+    )
+  }
 }
 
 function handleDismiss() {

@@ -3,7 +3,8 @@ import type { Ref } from 'vue'
 
 import type { PrimitiveProps } from '@/Primitive'
 import type { Direction, Orientation } from './utils'
-import { createContext, useCollection, useDirection, useId } from '@/shared'
+import { createContext, useCollection, useId } from '@/shared'
+import { useConfig } from '@/ConfigProvider'
 
 export interface NavigationMenuRootProps extends PrimitiveProps {
   modelValue?: string
@@ -53,7 +54,7 @@ export const [injectNavigationMenuContext, provideNavigationMenuContext]
 import {
   computed,
   ref,
-  toRefs,
+  toRef,
 } from 'vue'
 import { refAutoReset, useDebounceFn, useVModel } from '@vueuse/core'
 import {
@@ -85,15 +86,15 @@ const viewport = ref<HTMLElement>()
 const { createCollection } = useCollection('nav')
 createCollection(indicatorTrack)
 
-const { delayDuration, skipDelayDuration, dir: propDir } = toRefs(props)
-const dir = useDirection(propDir)
+const config = useConfig()
+const dir = computed(() => props.dir || config.dir.value)
 
-const isDelaySkipped = refAutoReset(false, skipDelayDuration)
+const isDelaySkipped = refAutoReset(false, toRef(props, 'skipDelayDuration'))
 const computedDelay = computed(() => {
   const isOpen = modelValue.value !== ''
-  if (isOpen || isDelaySkipped.value)
-    return 150 // 150ms for user to switch trigger or move into content view
-  else return delayDuration.value
+  return isOpen || isDelaySkipped.value
+    ? 150 // 150ms for user to switch trigger or move into content view
+    : props.delayDuration
 })
 
 const debouncedFn = useDebounceFn((val: string) => {

@@ -1,7 +1,7 @@
 <script lang="ts">
 import type { PrimitiveProps } from '@/Primitive'
 import { createContext, useId } from '@/shared'
-import { type Ref, computed, toRefs } from 'vue'
+import { type Ref, computed, toRef } from 'vue'
 import { injectTagsInputRootContext } from './TagsInputRoot.vue'
 
 export interface TagsInputItemProps extends PrimitiveProps {
@@ -25,7 +25,6 @@ import { Primitive, usePrimitiveElement } from '@/Primitive'
 import { CollectionItem } from '@/Collection'
 
 const props = defineProps<TagsInputItemProps>()
-const { value } = toRefs(props)
 
 const context = injectTagsInputRootContext()
 const { primitiveElement, currentElement } = usePrimitiveElement()
@@ -35,7 +34,7 @@ const textId = useId()
 const disabled = computed(() => props.disabled || context.disabled.value)
 
 provideTagsInputItemContext({
-  value,
+  value: toRef(props, 'value'),
   isSelected,
   disabled,
   textId,

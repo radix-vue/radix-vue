@@ -1,24 +1,23 @@
 <script setup lang="ts">
 import { usePrimitiveElement } from '@/Primitive'
 import SliderImpl from './SliderImpl.vue'
-import { computed, ref, toRefs } from 'vue'
+import { computed, ref } from 'vue'
 import type { SliderOrientationPrivateEmits, SliderOrientationPrivateProps } from './utils'
 import { BACK_KEYS, linearScale, provideSliderOrientationContext } from './utils'
 
 interface SliderVerticalProps extends SliderOrientationPrivateProps {}
 const props = defineProps<SliderVerticalProps>()
 const emits = defineEmits<SliderOrientationPrivateEmits>()
-const { max, min, inverted } = toRefs(props)
 
 const { primitiveElement, currentElement: sliderElement } = usePrimitiveElement()
 
 const rectRef = ref<ClientRect>()
-const isSlidingFromBottom = computed(() => !inverted.value)
+const isSlidingFromBottom = computed(() => !props.inverted)
 
 function getValueFromPointer(pointerPosition: number) {
   const rect = rectRef.value || sliderElement.value!.getBoundingClientRect()
   const input: [number, number] = [0, rect.height]
-  const output: [number, number] = isSlidingFromBottom.value ? [max.value, min.value] : [min.value, max.value]
+  const output: [number, number] = isSlidingFromBottom.value ? [props.max, props.min] : [props.min, props.max]
   const value = linearScale(input, output)
 
   rectRef.value = rect

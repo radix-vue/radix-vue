@@ -37,7 +37,7 @@ export const [injectPopoverRootContext, providePopoverRootContext]
 </script>
 
 <script setup lang="ts">
-import { ref, toRefs } from 'vue'
+import { ref, toRef } from 'vue'
 import { useVModel } from '@vueuse/core'
 import { PopperRoot } from '@/Popper'
 
@@ -47,7 +47,6 @@ const props = withDefaults(defineProps<PopoverRootProps>(), {
   modal: false,
 })
 const emit = defineEmits<PopoverRootEmits>()
-const { modal } = toRefs(props)
 const open = useVModel(props, 'open', emit, {
   defaultValue: props.defaultOpen,
   passive: (props.open === undefined) as false,
@@ -58,7 +57,7 @@ const hasCustomAnchor = ref(false)
 
 providePopoverRootContext({
   contentId: useId(),
-  modal,
+  modal: toRef(props, 'modal'),
   open,
   onOpenChange: (value) => {
     open.value = value

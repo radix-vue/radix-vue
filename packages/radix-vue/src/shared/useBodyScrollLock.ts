@@ -4,15 +4,14 @@ import {
 import { isClient } from '@vueuse/shared'
 import { nextTick, onBeforeUnmount, ref, watch } from 'vue'
 import { defu } from 'defu'
-import { injectConfigProviderContext } from '@/ConfigProvider/ConfigProvider.vue'
+import { useConfig } from '@/ConfigProvider'
+import type { ScrollBodyOption } from './types'
 
 const useInitialOverflowStyle = createGlobalState(() => ref<string | undefined>())
 const useBodyLockStackCount = createGlobalState(() => ref(0))
 
 export function useBodyScrollLock(initialState?: boolean | undefined) {
-  const context = injectConfigProviderContext({
-    scrollBody: ref(true),
-  })
+  const { scrollBody } = useConfig()
 
   const stack = useBodyLockStackCount()
   const initialOverflow = useInitialOverflowStyle()
@@ -39,16 +38,19 @@ export function useBodyScrollLock(initialState?: boolean | undefined) {
       if (initialOverflow.value === undefined)
         initialOverflow.value = document.body.style.overflow
 
-      const verticalScrollbarWidth
-    = window.innerWidth - document.documentElement.clientWidth
+      const verticalScrollbarWidth = window.innerWidth - document.documentElement.clientWidth
 
       const defaultConfig = { padding: verticalScrollbarWidth, margin: 0 }
 
-      const config = context.scrollBody?.value
-        ? typeof context.scrollBody.value === 'object'
+      const config: ScrollBodyOption = scrollBody.value
+        ? typeof scrollBody.value === 'object'
           ? defu({
-            padding: context.scrollBody.value.padding === true ? verticalScrollbarWidth : context.scrollBody.value.padding,
-            margin: context.scrollBody.value.margin === true ? verticalScrollbarWidth : context.scrollBody.value.margin,
+            padding: scrollBody.value.padding === true
+              ? verticalScrollbarWidth
+              : scrollBody.value.padding,
+            margin: scrollBody.value.margin === true
+              ? verticalScrollbarWidth
+              : scrollBody.value.margin,
           }, defaultConfig)
           : defaultConfig
         : ({ padding: 0, margin: 0 })

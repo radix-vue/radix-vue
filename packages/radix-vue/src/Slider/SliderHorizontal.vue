@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { usePrimitiveElement } from '@/Primitive'
 import SliderImpl from './SliderImpl.vue'
-import { computed, ref, toRefs } from 'vue'
+import { computed, ref } from 'vue'
 import type { Direction, SliderOrientationPrivateEmits, SliderOrientationPrivateProps } from './utils'
 import { BACK_KEYS, linearScale, provideSliderOrientationContext } from './utils'
+import { useConfig } from '..'
 
 interface SliderHorizontalProps extends SliderOrientationPrivateProps {
   dir?: Direction
@@ -11,17 +12,23 @@ interface SliderHorizontalProps extends SliderOrientationPrivateProps {
 
 const props = defineProps<SliderHorizontalProps>()
 const emits = defineEmits<SliderOrientationPrivateEmits>()
-const { max, min, dir, inverted } = toRefs(props)
 
 const { primitiveElement, currentElement: sliderElement } = usePrimitiveElement()
 
+const config = useConfig()
+const dir = computed(() => props.dir || config.dir.value)
+
 const rectRef = ref<ClientRect>()
-const isSlidingFromLeft = computed(() => (dir?.value === 'ltr' && !inverted.value) || (dir?.value !== 'ltr' && inverted.value))
+const isSlidingFromLeft = computed(() => {
+  return (dir.value === 'ltr' && !props.inverted) || (dir.value !== 'ltr' && props.inverted)
+})
 
 function getValueFromPointer(pointerPosition: number) {
   const rect = rectRef.value || sliderElement.value!.getBoundingClientRect()
-  const input: [number, number] = [0, rect.width]
-  const output: [number, number] = isSlidingFromLeft.value ? [min.value, max.value] : [max.value, min.value]
+  const input = [0, rect.width] as const
+  const output = isSlidingFromLeft.value
+    ? [props.min, props.max] as const
+    : [props.max, props.min] as const
   const value = linearScale(input, output)
 
   rectRef.value = rect

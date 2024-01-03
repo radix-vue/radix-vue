@@ -1,8 +1,9 @@
 <script lang="ts">
-import { type ComputedRef, type Ref, computed, ref, toRefs, watch } from 'vue'
+import { type ComputedRef, type Ref, computed, ref, toRef, watch } from 'vue'
 import type { PrimitiveProps } from '@/Primitive'
-import { createContext, useDirection } from '@/shared'
+import { createContext } from '@/shared'
 import type { Direction } from '@/shared/types'
+import { useConfig } from '@/ConfigProvider'
 
 export type PinInputRootEmits = {
   'update:modelValue': [value: string[]]
@@ -53,8 +54,9 @@ const props = withDefaults(defineProps<PinInputRootProps>(), {
   type: 'text',
 })
 const emits = defineEmits<PinInputRootEmits>()
-const { mask, otp, placeholder, type, disabled, dir: propDir } = toRefs(props)
-const dir = useDirection(propDir)
+
+const config = useConfig()
+const dir = computed(() => props.dir || config.dir.value)
 
 const modelValue = useVModel(props, 'modelValue', emits, {
   defaultValue: props.defaultValue ?? [],
@@ -78,12 +80,12 @@ watch(modelValue, () => {
 
 providePinInputRootContext({
   modelValue,
-  mask,
-  otp,
-  placeholder,
-  type,
+  mask: toRef(props, 'mask'),
+  otp: toRef(props, 'otp'),
+  placeholder: toRef(props, 'placeholder'),
+  type: toRef(props, 'type'),
   dir,
-  disabled,
+  disabled: toRef(props, 'disabled'),
   isCompleted,
   inputElements,
   onInputElementChange,

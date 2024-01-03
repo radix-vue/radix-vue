@@ -12,7 +12,7 @@ export interface MenuRadioItemProps extends MenuItemProps {
 </script>
 
 <script setup lang="ts">
-import { computed, toRefs } from 'vue'
+import { computed } from 'vue'
 import { getCheckedState } from './utils'
 import MenuItem from './MenuItem.vue'
 import { injectMenuRadioGroupContext } from './MenuRadioGroup.vue'
@@ -21,10 +21,9 @@ import { provideMenuItemIndicatorContext } from './MenuItemIndicator.vue'
 const props = defineProps<MenuRadioItemProps>()
 const emits = defineEmits<MenuRadioItemEmits>()
 
-const { value } = toRefs(props)
 const radioGroupContext = injectMenuRadioGroupContext()
 const checked = computed(
-  () => radioGroupContext.modelValue.value === value?.value,
+  () => radioGroupContext.modelValue.value === props.value,
 )
 
 provideMenuItemIndicatorContext({ checked })
@@ -37,7 +36,7 @@ provideMenuItemIndicatorContext({ checked })
     :aria-checked="checked"
     :data-state="getCheckedState(checked)"
     @select="
-      async (event) => {
+      (event) => {
         emits('select', event);
         radioGroupContext.onValueChange(value);
       }

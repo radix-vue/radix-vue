@@ -33,7 +33,7 @@ export const [injectPaginationRootContext, providePaginationRootContext]
 <script setup lang="ts">
 import { Primitive } from '@/Primitive'
 import { useVModel } from '@vueuse/core'
-import { computed, toRefs } from 'vue'
+import { computed, toRef } from 'vue'
 
 const props = withDefaults(defineProps<PaginationRootProps>(), {
   as: 'nav',
@@ -44,7 +44,6 @@ const props = withDefaults(defineProps<PaginationRootProps>(), {
   showEdges: false,
 })
 const emits = defineEmits<PaginationRootEmits>()
-const { siblingCount, disabled, showEdges } = toRefs(props)
 
 const page = useVModel(props, 'page', emits, {
   defaultValue: props.defaultPage,
@@ -59,9 +58,9 @@ providePaginationRootContext({
     page.value = value
   },
   pageCount,
-  siblingCount,
-  disabled,
-  showEdges,
+  siblingCount: toRef(props, 'siblingCount'),
+  disabled: toRef(props, 'disabled'),
+  showEdges: toRef(props, 'showEdges'),
 })
 </script>
 

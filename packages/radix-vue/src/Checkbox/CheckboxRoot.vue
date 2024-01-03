@@ -29,7 +29,7 @@ export const [injectCheckboxRootContext, provideCheckboxRootContext]
 </script>
 
 <script setup lang="ts">
-import { computed, toRefs } from 'vue'
+import { computed, toRef } from 'vue'
 import { Primitive, usePrimitiveElement } from '@/Primitive'
 import { getState, isIndeterminate } from './utils'
 
@@ -43,7 +43,6 @@ const props = withDefaults(defineProps<CheckboxRootProps>(), {
   as: 'button',
 })
 const emits = defineEmits<CheckboxRootEmits>()
-const { disabled } = toRefs(props)
 
 const checked = useVModel(props, 'checked', emits, {
   defaultValue: props.defaultChecked,
@@ -57,7 +56,7 @@ const ariaLabel = computed(() => props.id && currentElement.value
   : undefined)
 
 provideCheckboxRootContext({
-  disabled,
+  disabled: toRef(props, 'disabled'),
   state: checked,
 })
 </script>

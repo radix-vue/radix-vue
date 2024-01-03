@@ -2,8 +2,9 @@
 import type { Ref } from 'vue'
 import type { Direction } from '@/shared/types'
 import type { PrimitiveProps } from '@/Primitive'
-import { createContext, useDirection, useFormControl, useId } from '@/shared'
+import { createContext, useFormControl, useId } from '@/shared'
 import { createCollection } from '@/Collection'
+import { useConfig } from '@/ConfigProvider'
 
 export type AcceptableValue = string | number | boolean | object
 type ArrayOrWrapped<T> = T extends any[] ? T : Array<T>
@@ -55,7 +56,7 @@ export interface ComboboxRootProps<T = AcceptableValue> extends PrimitiveProps {
 </script>
 
 <script setup lang="ts" generic="T extends AcceptableValue = AcceptableValue">
-import { computed, nextTick, ref, toRefs, watch } from 'vue'
+import { computed, nextTick, ref, toRef, watch } from 'vue'
 import { PopperRoot } from '@/Popper'
 import { Primitive, usePrimitiveElement } from '@/Primitive'
 import { computedWithControl, useVModel } from '@vueuse/core'
@@ -67,8 +68,8 @@ const props = withDefaults(defineProps<ComboboxRootProps<T>>(), {
 })
 const emit = defineEmits<ComboboxRootEmits<T>>()
 
-const { multiple, disabled, name, dir: propDir } = toRefs(props)
-const dir = useDirection(propDir)
+const config = useConfig()
+const dir = computed(() => props.dir || config.dir.value)
 
 const searchTerm = useVModel(props, 'searchTerm', emit, {
   // @ts-expect-error ignore the type error here
@@ -78,7 +79,7 @@ const searchTerm = useVModel(props, 'searchTerm', emit, {
 
 const modelValue = useVModel(props, 'modelValue', emit, {
   // @ts-expect-error ignore the type error here
-  defaultValue: props.defaultValue ?? multiple.value ? [] : undefined,
+  defaultValue: props.defaultValue ?? props.multiple ? [] : undefined,
   passive: (props.modelValue === undefined) as false,
   deep: true,
 }) as Ref<T>
@@ -95,7 +96,7 @@ async function onOpenChange(val: boolean) {
   await nextTick()
   if (val) {
     if (modelValue.value) {
-      if (Array.isArray(modelValue.value) && multiple.value)
+      if (Array.isArray(modelValue.value) && props.multiple)
         selectedValue.value = (getItems().find(i => (i.ref)?.dataset?.state === 'checked'))?.value
       else
         selectedValue.value = modelValue.value as T
@@ -110,7 +111,7 @@ async function onOpenChange(val: boolean) {
 }
 
 function onValueChange(val: T) {
-  if (Array.isArray(modelValue.value) && multiple.value) {
+  if (Array.isArray(modelValue.value) && props.multiple) {
     const index = modelValue.value.findIndex(i => isEqual(i, val))
     index === -1 ? modelValue.value.push(val) : modelValue.value.splice(index, 1)
   }
@@ -143,7 +144,7 @@ const filteredOptions = computed(() => {
 })
 
 function resetSearchTerm() {
-  if (!multiple.value && modelValue.value) {
+  if (!props.multiple && modelValue.value) {
     if (props.displayValue)
       searchTerm.value = props.displayValue(modelValue.value)
     else if (typeof modelValue.value !== 'object')
@@ -189,8 +190,8 @@ provideComboboxRootContext({
   // @ts-expect-error igoring
   onValueChange,
   isUserInputted,
-  multiple,
-  disabled,
+  multiple: toRef(props, 'multiple'),
+  disabled: toRef(props, 'disabled'),
   open,
   onOpenChange,
   filteredOptions,

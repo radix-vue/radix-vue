@@ -11,7 +11,7 @@ export interface AvatarImageProps extends PrimitiveProps {
 </script>
 
 <script setup lang="ts">
-import { toRefs, watch } from 'vue'
+import { toRef, watch } from 'vue'
 import { Primitive } from '../Primitive'
 import { injectAvatarRootContext } from './AvatarRoot.vue'
 import { useImageLoadingStatus } from './utils'
@@ -19,7 +19,7 @@ import { useImageLoadingStatus } from './utils'
 const props = withDefaults(defineProps<AvatarImageProps>(), { as: 'img' })
 const emits = defineEmits<AvatarImageEmits>()
 
-const { src } = toRefs(props)
+const src = toRef(props, 'src')
 const rootContext = injectAvatarRootContext()
 
 const imageLoadingStatus = useImageLoadingStatus(src)

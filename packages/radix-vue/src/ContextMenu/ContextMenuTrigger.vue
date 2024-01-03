@@ -8,7 +8,7 @@ export interface ContextMenuTriggerProps extends PrimitiveProps {
 </script>
 
 <script setup lang="ts">
-import { computed, nextTick, ref, toRefs } from 'vue'
+import { computed, nextTick, ref } from 'vue'
 import { injectContextMenuRootContext } from './ContextMenuRoot.vue'
 import { isTouchOrPen } from './utils'
 import { Primitive } from '@/Primitive'
@@ -22,7 +22,6 @@ const props = withDefaults(defineProps<ContextMenuTriggerProps>(), {
   as: 'span',
   disabled: false,
 })
-const { disabled } = toRefs(props)
 
 const rootContext = injectContextMenuRootContext()
 const point = ref<Point>({ x: 0, y: 0 })
@@ -50,7 +49,7 @@ function handleOpen(event: MouseEvent | PointerEvent) {
 }
 
 async function handleContextMenu(event: PointerEvent) {
-  if (!disabled.value) {
+  if (!props.disabled) {
     await nextTick()
     if (!event.defaultPrevented) {
       clearLongPress()
@@ -61,7 +60,7 @@ async function handleContextMenu(event: PointerEvent) {
 }
 
 async function handlePointerDown(event: PointerEvent) {
-  if (!disabled.value) {
+  if (!props.disabled) {
     await nextTick()
 
     if (isTouchOrPen(event) && !event.defaultPrevented) {
@@ -73,7 +72,7 @@ async function handlePointerDown(event: PointerEvent) {
 }
 
 async function handlePointerEvent(event: PointerEvent) {
-  if (!disabled.value) {
+  if (!props.disabled) {
     await nextTick()
     if (isTouchOrPen(event) && !event.defaultPrevented)
       clearLongPress()

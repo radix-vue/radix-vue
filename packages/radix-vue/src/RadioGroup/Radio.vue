@@ -16,7 +16,7 @@ export interface RadioProps extends PrimitiveProps {
 </script>
 
 <script setup lang="ts">
-import { computed, toRefs } from 'vue'
+import { computed } from 'vue'
 import { useVModel } from '@vueuse/core'
 import {
   Primitive,
@@ -34,7 +34,6 @@ const checked = useVModel(props, 'checked', emits, {
   passive: (props.checked === undefined) as false,
 })
 
-const { value } = toRefs(props)
 const { primitiveElement, currentElement: triggerElement } = usePrimitiveElement()
 const isFormControl = useFormControl(triggerElement)
 

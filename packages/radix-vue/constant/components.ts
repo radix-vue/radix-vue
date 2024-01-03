@@ -60,6 +60,7 @@ export const components = {
 
   configProvider: [
     'ConfigProvider',
+    'useConfig',
   ],
 
   contextMenu: [

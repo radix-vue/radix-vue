@@ -1,8 +1,9 @@
 <script lang="ts">
 import type { PrimitiveProps } from '@/Primitive'
-import { createContext, useArrowNavigation, useDirection, useFormControl } from '@/shared'
+import { createContext, useArrowNavigation, useFormControl } from '@/shared'
 import type { Direction } from '@/shared/types'
-import { type Ref, ref, toRefs } from 'vue'
+import { type Ref, computed, ref, toRef } from 'vue'
+import { useConfig } from '@/ConfigProvider'
 
 export interface TagsInputRootProps extends PrimitiveProps {
   modelValue?: Array<string>
@@ -56,8 +57,8 @@ const props = withDefaults(defineProps<TagsInputRootProps>(), {
 })
 const emits = defineEmits<TagsInputRootEmits>()
 
-const { addOnPaste, disabled, delimiter, max, id, dir: propDir } = toRefs(props)
-const dir = useDirection(propDir)
+const config = useConfig()
+const dir = computed(() => props.dir || config.dir.value)
 
 const modelValue = useVModel(props, 'modelValue', emits, {
   defaultValue: props.defaultValue,
@@ -77,7 +78,7 @@ const isInvalidInput = ref(false)
 provideTagsInputRootContext({
   modelValue,
   onAddValue: (payload) => {
-    if ((modelValue.value.length >= max.value) && !!max.value) {
+    if ((modelValue.value.length >= props.max) && !!props.max) {
       emits('invalid', payload)
       return false
     }
@@ -172,12 +173,12 @@ provideTagsInputRootContext({
   },
   selectedElement,
   isInvalidInput,
-  addOnPaste,
+  addOnPaste: toRef(props, 'addOnPaste'),
   dir,
-  disabled,
-  delimiter,
-  max,
-  id,
+  disabled: toRef(props, 'disabled'),
+  delimiter: toRef(props, 'delimiter'),
+  max: toRef(props, 'max'),
+  id: toRef(props, 'id'),
 })
 </script>
 

@@ -30,7 +30,7 @@ export const [injectDialogRootContext, provideDialogRootContext]
 </script>
 
 <script setup lang="ts">
-import { ref, toRefs } from 'vue'
+import { ref, toRef } from 'vue'
 import { useVModel } from '@vueuse/core'
 
 const props = withDefaults(defineProps<DialogRootProps>(), {
@@ -47,11 +47,10 @@ const open = useVModel(props, 'open', emit, {
 
 const triggerElement = ref<HTMLElement>()
 const contentElement = ref<HTMLElement>()
-const { modal } = toRefs(props)
 
 provideDialogRootContext({
   open,
-  modal,
+  modal: toRef(props, 'modal'),
   openModal: () => {
     open.value = true
   },
