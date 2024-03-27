@@ -28,6 +28,8 @@ Radix Vue also has resolver for the popular [unplugin-vue-components](https://gi
 
 In `vite.config.ts`, import `radix-vue/resolver`, and configure as such and it will auto-imports all the components from Radix Vue.
 
+You can also use it for [Namespaced components](../guides/namespaced-components.md).
+
 ```ts{2,10  }
 import Component from 'unplugin-vue-components/vite'
 import RadixVueResolver from 'radix-vue/resolver'
@@ -41,7 +43,8 @@ export default defineConfig({
         RadixVueResolver()
 
         // RadixVueResolver({
-        //   prefix: '' // use the prefix option to add Prefix to the imported components
+        //   prefix: '', // use the prefix option to add Prefix to the imported components
+        //   namespaced: false // set to true if you want to use namespaced components
         // })
       ],
     }),
