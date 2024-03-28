@@ -38,8 +38,7 @@ import {
 } from 'vue'
 import { injectSelectRootContext } from './SelectRoot.vue'
 import { SelectContentDefaultContextValue, injectSelectContentContext } from './SelectContentImpl.vue'
-import { SELECTION_KEYS } from './utils'
-import { Primitive } from '@/Primitive'
+import { ListboxItem } from '@/Listbox'
 
 const props = defineProps<SelectItemProps>()
 const { disabled } = toRefs(props)
@@ -86,20 +85,6 @@ async function handlePointerLeave(event: PointerEvent) {
     contentContext.onItemLeave?.()
 }
 
-async function handleKeyDown(event: KeyboardEvent) {
-  await nextTick()
-  if (event.defaultPrevented)
-    return
-  const isTypingAhead = contentContext.searchRef?.value !== ''
-  if (isTypingAhead && event.key === ' ')
-    return
-  if (SELECTION_KEYS.includes(event.key))
-    handleSelect()
-  // prevent page scroll if using the space key to select an item
-  if (event.key === ' ')
-    event.preventDefault()
-}
-
 if (props.value === '') {
   throw new Error(
     'A <SelectItem /> must have a value prop that is not an empty string. This is because the Select value can be set to an empty string to clear the selection and show the placeholder.',
@@ -128,27 +113,28 @@ provideSelectItemContext({
 </script>
 
 <template>
-  <Primitive
+  <ListboxItem
     :ref="forwardRef"
-    role="option"
-    data-radix-vue-collection-item
+    :value="value"
+    :disabled="disabled"
     :aria-labelledby="textId"
     :data-highlighted="isFocused ? '' : undefined"
-    :aria-selected="isSelected && isFocused"
-    :data-state="isSelected ? 'checked' : 'unchecked'"
-    :aria-disabled="disabled || undefined"
-    :data-disabled="disabled ? '' : undefined"
     :tabindex="disabled ? undefined : -1"
     :as="as"
     :as-child="asChild"
     @focus="isFocused = true"
     @blur="isFocused = false"
-    @pointerup="handleSelect"
+    @select.prevent="(ev) => {
+      if (rootContext.open.value) {
+
+        console.log('selected?', ev)
+        handleSelect(ev.detail.originalEvent)
+      }
+    }"
     @touchend.prevent.stop
     @pointermove="handlePointerMove"
     @pointerleave="handlePointerLeave"
-    @keydown="handleKeyDown"
   >
     <slot />
-  </Primitive>
+  </ListboxItem>
 </template>

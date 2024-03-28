@@ -21,6 +21,7 @@ import SelectContentImpl from './SelectContentImpl.vue'
 import { injectSelectRootContext } from './SelectRoot.vue'
 import { Presence } from '@/Presence'
 import { useForwardPropsEmits } from '@/shared'
+import { ListboxRoot } from '@/Listbox'
 import SelectProvider from './SelectProvider.vue'
 
 defineOptions({
@@ -53,7 +54,9 @@ const renderPresence = computed(() => props.forceMount || rootContext.open.value
   <div v-else-if="!presenceRef?.present && fragment">
     <Teleport :to="fragment">
       <SelectProvider :context="rootContext">
-        <slot />
+        <ListboxRoot>
+          <slot />
+        </ListboxRoot>
       </SelectProvider>
     </Teleport>
   </div>

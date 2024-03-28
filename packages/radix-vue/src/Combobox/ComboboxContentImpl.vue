@@ -10,6 +10,7 @@ import {
 
 import type { DismissableLayerEmits, DismissableLayerProps } from '@/DismissableLayer'
 import type { PopperContentProps } from '@/Popper'
+import { ListboxRoot } from '@/Listbox'
 
 export type ComboboxContentImplEmits = DismissableLayerEmits
 
@@ -20,7 +21,10 @@ export interface ComboboxContentImplProps extends PopperContentProps, Dismissabl
   position?: 'inline' | 'popper'
   /** The document.body will be lock, and scrolling will be disabled. */
   bodyLock?: boolean
-  /** (alpha) Allow component to be dismissableLayer. */
+  /**
+  * Allow component to be dismissableLayer.
+  * @deprecated (Will be removed in version 2.0, use `Listbox` instead)
+  */
   dismissable?: boolean
 }
 
@@ -40,7 +44,6 @@ import { injectComboboxRootContext } from './ComboboxRoot.vue'
 import { DismissableLayer } from '@/DismissableLayer'
 import { PopperContent } from '@/Popper'
 import { Primitive } from '@/Primitive'
-import { CollectionSlot } from '@/Collection'
 
 const props = withDefaults(defineProps<ComboboxContentImplProps>(), {
   position: 'inline',
@@ -89,7 +92,11 @@ provideComboboxContentContext({ position })
 </script>
 
 <template>
-  <CollectionSlot>
+  <ListboxRoot
+    as-child
+    :model-value="rootContext.modelValue.value"
+    @update:model-value="rootContext.onValueChange"
+  >
     <DismissableLayer
       v-if="dismissable"
       as-child
@@ -149,5 +156,5 @@ provideComboboxContentContext({ position })
     >
       <slot />
     </component>
-  </CollectionSlot>
+  </ListboxRoot>
 </template>

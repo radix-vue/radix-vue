@@ -25,6 +25,7 @@ export default defineConfig({
     },
   },
   histoire: {
+    viteNodeInlineDeps: [/@tanstack/],
     plugins: [{ name: "builtin:tailwind-tokens" }, HstVue()],
     setupFile: "./setup.ts",
     storyMatch: [resolve(projectRootDir, "../packages/radix-vue/src/**/*.story.vue")],

@@ -46,7 +46,8 @@ export function focusFirst(candidates: HTMLElement[]) {
     // if focus is already where we want to go, we don't want to keep going through the candidates
     if (candidate === PREVIOUSLY_FOCUSED_ELEMENT)
       return
-    candidate.focus()
+    candidate.focus({ preventScroll: true })
+    candidate.scrollIntoView({ block: 'nearest' })
     if (document.activeElement !== PREVIOUSLY_FOCUSED_ELEMENT)
       return
   }

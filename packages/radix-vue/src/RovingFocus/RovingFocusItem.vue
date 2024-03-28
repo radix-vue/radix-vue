@@ -39,7 +39,7 @@ onUnmounted(() => {
     context.onFocusableItemRemove()
 })
 
-function handleKeydown(event: KeyboardEvent) {
+async function handleKeydown(event: KeyboardEvent) {
   if (event.key === 'Tab' && event.shiftKey) {
     context.onItemShiftTab()
     return
@@ -74,7 +74,6 @@ function handleKeydown(event: KeyboardEvent) {
         ? wrapArray(candidateNodes, currentIndex + 1)
         : candidateNodes.slice(currentIndex + 1)
     }
-
     nextTick(() => focusFirst(candidateNodes))
   }
 }

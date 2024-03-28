@@ -1,4 +1,4 @@
-import { expect } from 'vitest'
+import { beforeAll, expect, vi } from 'vitest'
 
 import '@testing-library/jest-dom/vitest'
 import * as matchers from 'vitest-axe/matchers'
@@ -13,4 +13,8 @@ configureAxe({
       id: 'region', enabled: false,
     }],
   },
+})
+
+beforeAll(() => {
+  window.HTMLElement.prototype.scrollIntoView = vi.fn()
 })

@@ -86,6 +86,7 @@ import SelectPopperPosition from './SelectPopperPosition.vue'
 import { FocusScope } from '@/FocusScope'
 import { DismissableLayer } from '@/DismissableLayer'
 import { focusFirst } from '@/Menu/utils'
+import { ListboxRoot } from '@/Listbox'
 
 const props = withDefaults(defineProps<SelectContentImplProps>(), {
   align: 'start',
@@ -260,36 +261,40 @@ provideSelectContentContext({
       @escape-key-down="emits('escapeKeyDown', $event)"
       @pointer-down-outside="emits('pointerDownOutside', $event)"
     >
-      <component
-        :is="
-          position === 'popper'
-            ? SelectPopperPosition
-            : SelectItemAlignedPosition
-        "
-        v-bind="{ ...$attrs, ...forwardedProps }"
-        :id="rootContext.contentId"
-        :ref="
-          (vnode: ComponentPublicInstance) => {
-            content = unrefElement(vnode) as HTMLElement
-            return undefined
-          }
-        "
-        role="listbox"
-        :data-state="rootContext.open.value ? 'open' : 'closed'"
+      <ListboxRoot
+        as-child
         :dir="rootContext.dir.value"
-        :style="{
-          // flex layout so we can place the scroll buttons properly
-          display: 'flex',
-          flexDirection: 'column',
-          // reset the outline by default as the content MAY get focused
-          outline: 'none',
-        }"
-        @contextmenu.prevent
-        @placed="isPositioned = true"
-        @keydown="(handleKeyDown as any)"
+        :model-value="rootContext.modelValue?.value"
+        @update:model-value="rootContext.onValueChange"
       >
-        <slot />
-      </component>
+        <component
+          :is="
+            position === 'popper'
+              ? SelectPopperPosition
+              : SelectItemAlignedPosition
+          "
+          v-bind="{ ...$attrs, ...forwardedProps }"
+          :id="rootContext.contentId"
+          :ref="
+            (vnode: ComponentPublicInstance) => {
+              content = unrefElement(vnode) as HTMLElement
+              return undefined
+            }
+          "
+          :data-state="rootContext.open.value ? 'open' : 'closed'"
+          :style="{
+            // flex layout so we can place the scroll buttons properly
+            display: 'flex',
+            flexDirection: 'column',
+            // reset the outline by default as the content MAY get focused
+            outline: 'none',
+          }"
+          @contextmenu.prevent
+          @placed="isPositioned = true"
+        >
+          <slot />
+        </component>
+      </ListboxRoot>
     </DismissableLayer>
   </FocusScope>
 </template>

@@ -194,6 +194,12 @@ export const components = {
     'Label',
   ],
 
+  listbox: [
+    'ListboxRoot',
+    'ListboxItem',
+    'ListboxVirtualizer',
+  ],
+
   menubar: [
     'MenubarRoot',
     'MenubarTrigger',
