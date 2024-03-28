@@ -34,6 +34,20 @@
     'required': false
   },
   {
+    'name': 'disableClickTrigger',
+    'description': '<p>If true, menu can't be open by click on trigger</p>\n',
+    'type': 'boolean',
+    'required': false,
+    'default': 'false'
+  },
+  {
+    'name': 'disableHoverTrigger',
+    'description': '<p>If true, menu can't be open by hover on trigger</p>\n',
+    'type': 'boolean',
+    'required': false,
+    'default': 'false'
+  },
+  {
     'name': 'modelValue',
     'description': '<p>The controlled value of the menu item to activate. Can be used as <code>v-model</code>.</p>\n',
     'type': 'string',
@@ -52,20 +66,6 @@
     'type': 'number',
     'required': false,
     'default': '300'
-  },
-  {
-    'name': 'disableClickTrigger',
-    'description': '<p> If true, the menu can\'t be opened by clicking on the trigger </p>\n',
-    'type': 'boolean',
-    'required': false,
-    'default': false
-  },
-  {
-    'name': 'disableHoverTrigger',
-    'description': '<p> If true, the menu can\'t be opened by hovering on the trigger </p>\n',
-    'type': 'boolean',
-    'required': false,
-    'default': false
   }
 ]" />
 

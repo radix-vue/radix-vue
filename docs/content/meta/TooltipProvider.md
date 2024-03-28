@@ -22,6 +22,13 @@
     'default': 'false'
   },
   {
+    'name': 'ignoreNonKeyboardFocus',
+    'description': '<p>Prevent the tooltip from opening if the focus did not come from\nthe keyboard by matching against the <code>:focus-visible</code> selector.\nThis is useful if you want to avoid opening it when switching\nbrowser tabs or closing a dialog.</p>\n',
+    'type': 'boolean',
+    'required': false,
+    'default': 'false'
+  },
+  {
     'name': 'skipDelayDuration',
     'description': '<p>How much time a user has to enter another trigger without incurring a delay again.</p>\n',
     'type': 'number',

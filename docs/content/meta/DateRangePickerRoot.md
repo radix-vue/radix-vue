@@ -30,7 +30,7 @@
   {
     'name': 'defaultValue',
     'description': '<p>The default value for the calendar</p>\n',
-    'type': '{ start: DateValue; end: DateValue; }',
+    'type': 'DateRange',
     'required': false
   },
   {
@@ -85,8 +85,8 @@
   },
   {
     'name': 'locale',
-    'description': '<p>Whether or not the calendar is readonly</p>\n',
-    'type': '\'tr\' | \'th\' | \'en\' | \'ach\' | \'af\' | \'am\' | \'an\' | \'ar\' | \'ast\' | \'az\' | \'be\' | \'bg\' | \'bn\' | \'br\' | \'bs\' | \'ca\' | \'cak\' | \'ckb\' | \'cs\' | \'cy\' | \'da\' | \'de\' | \'dsb\' | \'el\' | \'eo\' | \'es\' | ... 49 more ...',
+    'description': '<p>The locale to use for formatting dates</p>\n',
+    'type': 'string',
     'required': false,
     'default': '\'en\''
   },
@@ -98,7 +98,7 @@
   },
   {
     'name': 'minValue',
-    'description': '<p>The locale to use for formatting dates</p>\n',
+    'description': '<p>The minimum date that can be selected</p>\n',
     'type': 'DateValue',
     'required': false
   },
@@ -112,7 +112,7 @@
   {
     'name': 'modelValue',
     'description': '<p>The controlled checked state of the calendar. Can be bound as <code>v-model</code>.</p>\n',
-    'type': '{ start: DateValue; end: DateValue; }',
+    'type': 'DateRange',
     'required': false
   },
   {
@@ -187,7 +187,7 @@
   {
     'name': 'update:modelValue',
     'description': '<p>Event handler called whenever the model value changes</p>\n',
-    'type': '[date: DateValue]'
+    'type': '[date: DateRange]'
   },
   {
     'name': 'update:open',

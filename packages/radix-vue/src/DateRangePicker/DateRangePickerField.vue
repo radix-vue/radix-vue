@@ -1,4 +1,5 @@
 <script lang="ts">
+import { isEqualDay } from '@internationalized/date'
 import { DateRangeFieldRoot } from '..'
 import { injectDateRangePickerRootContext } from './DateRangePickerRoot.vue'
 </script>
@@ -27,8 +28,14 @@ const rootContext = injectDateRangePickerRootContext()
       isDateUnavailable: rootContext.isDateUnavailable,
       required: rootContext.required.value,
     }"
-    @update:model-value="rootContext.onDateChange"
-    @update:placeholder="rootContext.onPlaceholderChange"
+    @update:model-value="(date) => {
+      if (date.start && rootContext.modelValue.value.start && date.end && rootContext.modelValue.value.end && date.start.compare(rootContext.modelValue.value.start) === 0 && date.end.compare(rootContext.modelValue.value.end) === 0) return
+      rootContext.onDateChange(date)
+    }"
+    @update:placeholder="(date) => {
+      if (isEqualDay(date, rootContext.placeholder.value) && date.compare(rootContext.placeholder.value) === 0) return
+      rootContext.onPlaceholderChange(date)
+    }"
   >
     <slot :segments="segments" :model-value="modelValue" />
   </DateRangeFieldRoot>

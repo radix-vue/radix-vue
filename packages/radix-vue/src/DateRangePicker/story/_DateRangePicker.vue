@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { DateValue } from '@internationalized/date'
+import { type DateValue } from '@internationalized/date'
 import type { DateRangePickerRootProps } from '../'
 import {
   DateRangePickerCalendar,

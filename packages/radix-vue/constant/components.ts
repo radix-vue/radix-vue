@@ -403,5 +403,6 @@ export const utilities = {
     'useDateFormatter',
     'withDefault',
     'createContext',
+    'toDate',
   ],
 }

@@ -36,7 +36,7 @@ const {
   disabled: rootContext.disabled,
   readonly: rootContext.readonly,
   focusNext: rootContext.focusNext,
-  defaultDate: rootContext.defaultDate,
+  modelValue: props.type === 'start' ? rootContext.startValue : rootContext.endValue,
 })
 
 const disabled = computed(() => rootContext.disabled.value)

@@ -27,6 +27,12 @@
     'required': false
   },
   {
+    'name': 'ignoreNonKeyboardFocus',
+    'description': '<p>Prevent the tooltip from opening if the focus did not come from\nthe keyboard by matching against the <code>:focus-visible</code> selector.\nThis is useful if you want to avoid opening it when switching\nbrowser tabs or closing a dialog.</p>\n',
+    'type': 'boolean',
+    'required': false
+  },
+  {
     'name': 'open',
     'description': '<p>The controlled open state of the tooltip.</p>\n',
     'type': 'boolean',

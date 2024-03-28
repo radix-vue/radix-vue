@@ -2,9 +2,13 @@
 import { Icon } from '@iconify/vue'
 import { CalendarCell, CalendarCellTrigger, CalendarGrid, CalendarGridBody, CalendarGridHead, CalendarGridRow, CalendarHeadCell, CalendarHeader, CalendarHeading, CalendarNext, CalendarPrev, CalendarRoot } from '../'
 import { type Ref, ref } from 'vue'
-import { type DateValue, getLocalTimeZone, today } from '@internationalized/date'
+import { CalendarDate, type DateValue, getLocalTimeZone, today } from '@internationalized/date'
+
+import { toDate } from '@/shared'
 
 import CalendarPopover from './_CalendarPopover.vue'
+
+const value = ref(new CalendarDate(2024, 3, 20)) as Ref<DateValue>
 
 const placeholder = ref(today(getLocalTimeZone())) as Ref<DateValue>
 </script>
@@ -14,6 +18,7 @@ const placeholder = ref(today(getLocalTimeZone())) as Ref<DateValue>
     <Variant title="default">
       <CalendarRoot
         v-slot="{ weekDays, grid, getMonths, getYears, formatter, date }"
+        v-model="value"
         v-model:placeholder="placeholder"
         class="mt-6 rounded-[15px] border border-black bg-white p-[22px] shadow-md"
         fixed-weeks
@@ -27,7 +32,7 @@ const placeholder = ref(today(getLocalTimeZone())) as Ref<DateValue>
           <CalendarHeading class="text-[15px] text-black font-medium flex justify-center gap-2">
             <CalendarPopover>
               <template #trigger>
-                <span class="cursor-pointer">{{ formatter.fullMonth(date.toDate(getLocalTimeZone())) }}</span>
+                <span class="cursor-pointer">{{ formatter.fullMonth(toDate(date)) }}</span>
               </template>
               <div class="grid grid-cols-4 bg-white rounded-[9px]">
                 <div
@@ -35,15 +40,15 @@ const placeholder = ref(today(getLocalTimeZone())) as Ref<DateValue>
                   :key="month.toString()"
                   class="relative cursor-pointer flex items-center justify-center whitespace-nowrap rounded-[9px] border border-transparent bg-transparent text-sm font-normal text-black p-2 outline-none focus:shadow-[0_0_0_2px] focus:shadow-black hover:border-black"
                   :class="{ 'before:absolute before:top-[5px] before:rounded-full before:w-1 before:h-1 before:block before:bg-grass9': placeholder.month === month.month }"
-                  @click="placeholder = month.set({ ...month })"
+                  @click="placeholder = month.copy()"
                 >
-                  <span class="cursor-pointer">{{ formatter.custom(month.toDate(getLocalTimeZone()), { month: 'short' }) }}</span>
+                  <span class="cursor-pointer">{{ formatter.custom(toDate(month), { month: 'short' }) }}</span>
                 </div>
               </div>
             </CalendarPopover>
             <CalendarPopover>
               <template #trigger>
-                <span class="cursor-pointer">{{ formatter.fullYear(date.toDate(getLocalTimeZone())) }}</span>
+                <span class="cursor-pointer">{{ formatter.fullYear(toDate(date)) }}</span>
               </template>
               <div class="grid grid-cols-4 bg-white rounded-[9px] gap-4">
                 <div
@@ -51,9 +56,9 @@ const placeholder = ref(today(getLocalTimeZone())) as Ref<DateValue>
                   :key="yearValue.toString()"
                   class="relative cursor-pointer flex items-center justify-center whitespace-nowrap rounded-[9px] border border-transparent bg-transparent text-sm font-normal text-black p-2 outline-none focus:shadow-[0_0_0_2px] focus:shadow-black hover:border-black"
                   :class="{ 'before:absolute before:top-[5px] before:rounded-full before:w-1 before:h-1 before:block before:bg-grass9': placeholder.year === yearValue.year }"
-                  @click="placeholder = yearValue.set({ ...yearValue })"
+                  @click="placeholder = yearValue.copy()"
                 >
-                  {{ yearValue.year }}
+                  {{ formatter.fullYear(toDate(yearValue)) }}
                 </div>
               </div>
             </CalendarPopover>

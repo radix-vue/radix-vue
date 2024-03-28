@@ -21,6 +21,7 @@ import {
   DateRangePickerTrigger,
   Label,
 } from 'radix-vue'
+
 import './styles.css'
 </script>
 

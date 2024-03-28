@@ -8,6 +8,7 @@ import { CalendarCell, CalendarCellTrigger, CalendarGrid, CalendarGridBody, Cale
     <Variant title="default">
       <CalendarRoot
         v-slot="{ weekDays, grid }"
+
         class="mt-6 rounded-xl border border-black bg-white p-4 shadow-md"
       >
         <CalendarHeader class="flex items-center justify-between">

@@ -77,7 +77,7 @@ function handleClick(e: Event) {
   changeDate(
     parseStringToDateValue(
       (e.target as HTMLDivElement).getAttribute('data-value')!,
-      rootContext.defaultDate,
+      rootContext.placeholder.value,
     ),
   )
 }
@@ -111,7 +111,7 @@ function handleArrowKey(e: KeyboardEvent) {
       changeDate(
         parseStringToDateValue(
           currentCell!.getAttribute('data-value')!,
-          rootContext.defaultDate,
+          rootContext.placeholder.value,
         ),
       )
       return
@@ -151,11 +151,6 @@ function handleArrowKey(e: KeyboardEvent) {
     })
   }
 }
-const formattedTriggerText = computed(() => {
-  return rootContext.formatter.custom(props.day.toDate(getLocalTimeZone()), {
-    day: 'numeric',
-  })
-})
 </script>
 
 <template>
@@ -180,7 +175,7 @@ const formattedTriggerText = computed(() => {
     @keydown.enter.prevent
   >
     <slot>
-      {{ formattedTriggerText }}
+      {{ day.day.toLocaleString(rootContext.locale.value) }}
     </slot>
   </Primitive>
 </template>

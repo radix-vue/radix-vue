@@ -6,7 +6,6 @@ import {
   isSameDay,
   isSameMonth,
   isToday,
-
 } from '@internationalized/date'
 import { computed, nextTick } from 'vue'
 import { useKbd } from '@/shared'
@@ -68,7 +67,7 @@ function changeDate(date: DateValue) {
   if (rootContext.isDateDisabled(date) || rootContext.isDateUnavailable?.(date))
     return
 
-  rootContext.lastPressedDateValue.value = rootContext.defaultDate.set({ ...date })
+  rootContext.lastPressedDateValue.value = date.copy()
 
   if (rootContext.startValue.value && rootContext.highlightedRange.value === null) {
     if (isSameDay(date, rootContext.startValue.value) && !rootContext.preventDeselect.value && !rootContext.endValue.value) {
@@ -78,7 +77,7 @@ function changeDate(date: DateValue) {
     }
     else if (!rootContext.endValue.value) {
       if (rootContext.lastPressedDateValue.value && isSameDay(rootContext.lastPressedDateValue.value, date))
-        rootContext.startValue.value = rootContext.defaultDate.set({ ...date })
+        rootContext.startValue.value = date.copy()
       return
     }
   }
@@ -90,24 +89,32 @@ function changeDate(date: DateValue) {
   }
 
   if (!rootContext.startValue.value) {
-    rootContext.startValue.value = rootContext.defaultDate.set({ ...date })
+    rootContext.startValue.value = date.copy()
   }
   else if (!rootContext.endValue.value) {
-    rootContext.endValue.value = rootContext.defaultDate.set({ ...date })
+    rootContext.endValue.value = date.copy()
   }
   else if (rootContext.endValue.value && rootContext.startValue.value) {
     rootContext.endValue.value = undefined
-    rootContext.startValue.value = rootContext.defaultDate.set({ ...date })
+    rootContext.startValue.value = date.copy()
   }
 }
 
 function handleClick(e: Event) {
-  e.preventDefault()
-  changeDate(parseStringToDateValue((e.target as HTMLDivElement).getAttribute('data-value')!, rootContext.defaultDate))
+  const date = parseStringToDateValue((e.target as HTMLDivElement).getAttribute('data-value')!, rootContext.placeholder.value)
+
+  if (rootContext.isDateDisabled(date) || rootContext.isDateUnavailable?.(date))
+    return
+
+  changeDate(date)
 }
 
-function handleFocus(date: DateValue) {
-  rootContext.focusedValue.value = rootContext.defaultDate.set({ ...date })
+function handleFocus(e: Event) {
+  const date = parseStringToDateValue((e.target as HTMLDivElement).getAttribute('data-value')!, rootContext.placeholder.value)
+
+  if (rootContext.isDateDisabled(date) || rootContext.isDateUnavailable?.(date))
+    return
+  rootContext.focusedValue.value = date.copy()
 }
 
 function handleArrowKey(e: KeyboardEvent) {
@@ -137,7 +144,7 @@ function handleArrowKey(e: KeyboardEvent) {
       break
     case kbd.ENTER:
     case kbd.SPACE_CODE:
-      changeDate(parseStringToDateValue(currentCell!.getAttribute('data-value')!, rootContext.defaultDate))
+      changeDate(parseStringToDateValue(currentCell!.getAttribute('data-value')!, rootContext.placeholder.value))
       return
     default:
       return
@@ -173,12 +180,6 @@ function handleArrowKey(e: KeyboardEvent) {
     })
   }
 }
-
-const formattedTriggerText = computed(() => {
-  return rootContext.formatter.custom(props.day.toDate(getLocalTimeZone()), {
-    day: 'numeric',
-  })
-})
 </script>
 
 <template>
@@ -203,12 +204,12 @@ const formattedTriggerText = computed(() => {
     :data-focused="isFocusedDate ? '' : undefined"
     :tabindex="isFocusedDate ? 0 : isOutsideView || isDisabled ? undefined : -1"
     @click="handleClick"
-    @focus="handleFocus(day)"
-    @mouseenter="handleFocus(day)"
+    @focusin="handleFocus"
+    @mouseenter="handleFocus"
     @keydown.up.down.left.right.enter.space="handleArrowKey"
   >
-    <slot :text="formattedTriggerText">
-      {{ formattedTriggerText }}
+    <slot>
+      {{ day.day.toLocaleString(rootContext.locale.value) }}
     </slot>
   </Primitive>
 </template>

@@ -1,9 +1,9 @@
 <script lang="ts">
-import { type DateValue, isSameDay } from '@internationalized/date'
+import { type DateValue, isEqualDay, isSameDay } from '@internationalized/date'
 
 import type { Ref } from 'vue'
 import { createContext } from '@/shared'
-import { type Granularity, type HourCycle, type Matcher, type SupportedLocale, type WeekDayFormat, getDefaultDate } from '@/shared/date'
+import { type Granularity, type HourCycle, type Matcher, type WeekDayFormat, getDefaultDate } from '@/shared/date'
 
 import { type CalendarRootProps, type DateFieldRoot, type DateFieldRootProps, PopoverRoot, type PopoverRootEmits, type PopoverRootProps } from '..'
 
@@ -16,7 +16,7 @@ type DatePickerRootContext = {
   granularity: Ref<Granularity | undefined>
   hideTimeZone: Ref<boolean>
   required: Ref<boolean>
-  locale: Ref<SupportedLocale>
+  locale: Ref<string>
   dateFieldRef: Ref<InstanceType<typeof DateFieldRoot> | undefined>
   modelValue: Ref<DateValue | undefined>
   placeholder: Ref<DateValue>
@@ -33,7 +33,7 @@ type DatePickerRootContext = {
   defaultOpen: Ref<boolean>
   open: Ref<boolean>
   modal: Ref<boolean>
-  onDateChange: (date: DateValue) => void
+  onDateChange: (date: DateValue | undefined) => void
   onPlaceholderChange: (date: DateValue) => void
 }
 
@@ -51,7 +51,7 @@ export const [injectDatePickerRootContext, provideDatePickerRootContext]
 </script>
 
 <script setup lang="ts">
-import { ref, toRefs } from 'vue'
+import { computed, ref, toRefs } from 'vue'
 import { useVModel } from '@vueuse/core'
 
 defineOptions({
@@ -102,18 +102,18 @@ const {
 } = toRefs(props)
 
 const modelValue = useVModel(props, 'modelValue', emits, {
-  defaultValue: props.defaultValue,
+  defaultValue: props.defaultValue ?? undefined,
   passive: (props.modelValue === undefined) as false,
 }) as Ref<DateValue | undefined>
 
-const defaultDate = getDefaultDate({
+const defaultDate = computed(() => getDefaultDate({
   defaultPlaceholder: props.placeholder,
   granularity: props.granularity,
   defaultValue: modelValue.value,
-})
+}))
 
 const placeholder = useVModel(props, 'placeholder', emits, {
-  defaultValue: props.defaultPlaceholder ?? defaultDate.copy(),
+  defaultValue: props.defaultPlaceholder ?? defaultDate.value.copy(),
   passive: (props.placeholder === undefined) as false,
 }) as Ref<DateValue>
 
@@ -150,16 +150,17 @@ provideDatePickerRootContext({
   hideTimeZone,
   hourCycle,
   dateFieldRef,
-  onDateChange(date: DateValue) {
+  onDateChange(date: DateValue | undefined) {
     if (!date || !modelValue.value)
       modelValue.value = date
     else if (!preventDeselect.value && isSameDay(modelValue.value as DateValue, date))
       modelValue.value = undefined
     else
-      modelValue.value = defaultDate.set({ ...date })
+      modelValue.value = date.copy()
   },
   onPlaceholderChange(date: DateValue) {
-    placeholder.value = defaultDate.set({ ...date })
+    if (!isEqualDay(date, placeholder.value))
+      placeholder.value = date.copy()
   },
 })
 </script>

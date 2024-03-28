@@ -10,6 +10,6 @@
   {
     'name': 'modelValue',
     'description': '',
-    'type': '{ start: DateValue | undefined; end: DateValue | undefined; }'
+    'type': 'DateRange'
   }
 ]" />

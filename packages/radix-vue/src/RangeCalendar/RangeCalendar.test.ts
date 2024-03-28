@@ -98,7 +98,7 @@ describe('RangeCalendar', () => {
 
     const fifthDayInMonth = getByTestId('date-1-5')
     await user.click(fifthDayInMonth)
-    expect(fifthDayInMonth).toHaveFocus()
+    expect(getByTestId('date-1-5')).toHaveAttribute('data-focused')
 
     const selectedDays = getSelectedDays(calendar)
     expect(selectedDays).toHaveLength(1)

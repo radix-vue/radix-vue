@@ -27,11 +27,3 @@
     'required': true
   }
 ]" />
-
-<SlotsTable :data="[
-  {
-    'name': 'text',
-    'description': '',
-    'type': 'string'
-  }
-]" />

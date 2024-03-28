@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { DateValue } from '@internationalized/date'
+import { type DateValue } from '@internationalized/date'
 import type { DateFieldRootProps } from '../'
 import { DateFieldInput, DateFieldRoot } from '../'
 import { Label } from '@/Label'

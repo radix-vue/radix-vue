@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { DateValue } from '@internationalized/date'
+import { type DateValue } from '@internationalized/date'
 import { CalendarCell, CalendarCellTrigger, CalendarGrid, CalendarGridBody, CalendarGridHead, CalendarGridRow, CalendarHeadCell, CalendarHeader, CalendarHeading, CalendarNext, CalendarPrev, CalendarRoot, type CalendarRootProps } from '../'
 
 const props = defineProps<{ calendarProps?: CalendarRootProps; emits?: { 'onUpdate:modelValue'?: (data: DateValue) => void } }>()

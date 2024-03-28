@@ -2,7 +2,7 @@
   * Implementation ported from https://github.com/melt-ui/melt-ui/blob/develop/src/lib/internal/helpers/date/utils.ts
 */
 
-import { CalendarDate, CalendarDateTime, type DateValue, ZonedDateTime, getDayOfWeek, getLocalTimeZone, parseDate, parseDateTime, parseZonedDateTime } from '@internationalized/date'
+import { CalendarDate, CalendarDateTime, type DateValue, ZonedDateTime, getDayOfWeek, getLocalTimeZone, parseDate, parseDateTime, parseZonedDateTime, toCalendar } from '@internationalized/date'
 
 export type Granularity = 'day' | 'hour' | 'minute' | 'second'
 
@@ -12,12 +12,6 @@ type GetDefaultDateProps = {
   defaultValue?: DateValue | DateValue[] | undefined
   defaultPlaceholder?: DateValue | undefined
   granularity?: Granularity
-}
-
-const defaultDateDefaults = {
-  defaultValue: undefined,
-  defaultPlaceholder: undefined,
-  granularity: 'day',
 }
 
 /**
@@ -30,31 +24,28 @@ const defaultDateDefaults = {
  * behavior the user expects based on the props they've provided.
  *
  */
-export function getDefaultDate(props?: GetDefaultDateProps): DateValue {
-  const withDefaults = { ...defaultDateDefaults, ...props }
-  const { defaultValue, defaultPlaceholder, granularity } = withDefaults
+export function getDefaultDate(props: GetDefaultDateProps): DateValue {
+  const { defaultValue, defaultPlaceholder, granularity = 'day' } = props
 
   if (Array.isArray(defaultValue) && defaultValue.length)
-    return defaultValue[defaultValue.length - 1]
+    return defaultValue.at(-1)!.copy()
 
-  if (defaultValue && !Array.isArray(defaultValue)) {
-    return defaultValue
-  }
-  else if (defaultPlaceholder) {
-    return defaultPlaceholder
-  }
-  else {
-    const date = new Date()
-    const year = date.getFullYear()
-    const month = date.getMonth() + 1
-    const day = date.getDate()
-    const calendarDateTimeGranularities = ['hour', 'minute', 'second']
+  if (defaultValue && !Array.isArray(defaultValue))
+    return defaultValue.copy()
 
-    if (calendarDateTimeGranularities.includes(granularity ?? 'day'))
-      return new CalendarDateTime(year, month, day, 0, 0, 0)
+  if (defaultPlaceholder)
+    return defaultPlaceholder.copy()
 
-    return new CalendarDate(year, month, day)
-  }
+  const date = new Date()
+  const year = date.getFullYear()
+  const month = date.getMonth() + 1
+  const day = date.getDate()
+  const calendarDateTimeGranularities = ['hour', 'minute', 'second']
+
+  if (calendarDateTimeGranularities.includes(granularity ?? 'day'))
+    return new CalendarDateTime(year, month, day, 0, 0, 0)
+
+  return new CalendarDate(year, month, day)
 }
 
 /**
@@ -65,14 +56,17 @@ export function getDefaultDate(props?: GetDefaultDateProps): DateValue {
  * strings, to the same type being used by the date component.
  */
 export function parseStringToDateValue(dateStr: string, referenceVal: DateValue): DateValue {
-  if (referenceVal instanceof ZonedDateTime)
-    return parseZonedDateTime(dateStr)
+  let dateValue: DateValue
+  if (isZonedDateTime(referenceVal))
+    dateValue = parseZonedDateTime(dateStr)
 
-  else if (referenceVal instanceof CalendarDateTime)
-    return parseDateTime(dateStr)
+  else if (isCalendarDateTime(referenceVal))
+    dateValue = parseDateTime(dateStr)
 
   else
-    return parseDate(dateStr)
+    dateValue = parseDate(dateStr)
+
+  return dateValue.calendar !== referenceVal.calendar ? toCalendar(dateValue, referenceVal.calendar) : dateValue
 }
 
 /**
@@ -81,7 +75,7 @@ export function parseStringToDateValue(dateStr: string, referenceVal: DateValue)
  * If no timezone is provided, the date will be converted to the local timezone.
  */
 export function toDate(dateValue: DateValue, tz: string = getLocalTimeZone()) {
-  if (dateValue instanceof ZonedDateTime)
+  if (isZonedDateTime(dateValue))
     return dateValue.toDate()
   else
     return dateValue.toDate(tz)

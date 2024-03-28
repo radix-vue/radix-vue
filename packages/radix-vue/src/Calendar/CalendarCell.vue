@@ -12,13 +12,14 @@ export interface CalendarCellProps extends PrimitiveProps {
 import { Primitive } from '@/Primitive'
 import { injectCalendarRootContext } from './CalendarRoot.vue'
 
-const props = withDefaults(defineProps<CalendarCellProps>(), { as: 'td' })
+withDefaults(defineProps<CalendarCellProps>(), { as: 'td' })
 const rootContext = injectCalendarRootContext()
 </script>
 
 <template>
   <Primitive
-    v-bind="props"
+    :as="as"
+    :as-child="asChild"
     role="gridcell"
     :aria-selected="rootContext.isDateSelected(date) ? true : undefined"
     :aria-disabled="rootContext.isDateDisabled(date) || rootContext.isDateUnavailable?.(date)"
