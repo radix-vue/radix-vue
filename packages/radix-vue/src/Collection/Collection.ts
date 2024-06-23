@@ -25,10 +25,12 @@ export function createCollection<ItemData = {}>(attrName = ITEM_DATA_ATTR) {
     itemMap,
     attrName,
   }) as CollectionContext<ItemData>
+
   const { getItems } = useCollection(context)
 
   const reactiveItems = computed(() => Array.from(context.itemMap.value.values()))
   const itemMapSize = computed(() => context.itemMap.value.size)
+
   return { getItems, reactiveItems, itemMapSize }
 }
 

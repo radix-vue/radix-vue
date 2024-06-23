@@ -52,7 +52,7 @@
   {
     'name': 'update:modelValue',
     'description': '<p>Event handler called when the value changes</p>\n',
-    'type': '[payload: StringOrNumber]'
+    'type': '[payload: string | number]'
   }
 ]" />
 

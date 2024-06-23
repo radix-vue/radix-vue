@@ -1,11 +1,11 @@
 <script lang="ts">
 import type { PrimitiveProps } from '@/Primitive'
 import { useForwardExpose } from '@/shared'
-import type { StringOrNumber } from '@/shared/types'
+import type { ModelValue } from './TabsRoot.vue'
 
 export interface TabsTriggerProps extends PrimitiveProps {
   /** A unique value that associates the trigger with a content. */
-  value: StringOrNumber
+  value: ModelValue
   /** When `true`, prevents the user from interacting with the tab. */
   disabled?: boolean
 }
