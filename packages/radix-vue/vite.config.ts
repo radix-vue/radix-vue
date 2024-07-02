@@ -27,6 +27,7 @@ export default defineConfig({
     ],
   },
   build: {
+    sourcemap: true,
     lib: {
       name: 'radix-vue',
       fileName: (format, name) => {
