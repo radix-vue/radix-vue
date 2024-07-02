@@ -86,6 +86,12 @@
     'description': '<p>The controlled search term of the Combobox. Can be binded-with with v-model:searchTerm.</p>\n',
     'type': 'string',
     'required': false
+  },
+  {
+    'name': 'selectedValue',
+    'description': '<p>The current highlighted value of the COmbobox. Can be binded-with <code>v-model:selectedValue</code>.</p>\n',
+    'type': 'AcceptableValue',
+    'required': false
   }
 ]" />
 
@@ -104,6 +110,11 @@
     'name': 'update:searchTerm',
     'description': '<p>Event handler called when the searchTerm of the combobox changes.</p>\n',
     'type': '[value: string]'
+  },
+  {
+    'name': 'update:selectedValue',
+    'description': '<p>Event handler called when the highlighted value of the combobox changes</p>\n',
+    'type': '[value: AcceptableValue]'
   }
 ]" />
 

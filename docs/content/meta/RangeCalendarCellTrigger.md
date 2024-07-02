@@ -27,3 +27,11 @@
     'required': true
   }
 ]" />
+
+<SlotsTable :data="[
+  {
+    'name': 'dayValue',
+    'description': '<p>Current day</p>\n',
+    'type': 'string'
+  }
+]" />

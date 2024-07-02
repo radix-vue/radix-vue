@@ -1,7 +1,7 @@
 <script lang="ts">
 import type { Ref } from 'vue'
 import type { PrimitiveProps } from '@/Primitive'
-import { createContext, useCollection, useDirection, useForwardExpose } from '@/shared'
+import { createContext, useDirection } from '@/shared'
 import type {
   Direction,
   Orientation,
@@ -52,6 +52,7 @@ import { ref, toRefs } from 'vue'
 import { useVModel } from '@vueuse/core'
 import { Primitive } from '@/Primitive'
 import { ENTRY_FOCUS, EVENT_OPTIONS, focusFirst } from './utils'
+import { CollectionSlot, createCollection } from '@/Collection'
 
 const props = withDefaults(defineProps<RovingFocusGroupProps>(), {
   loop: false,
@@ -59,6 +60,7 @@ const props = withDefaults(defineProps<RovingFocusGroupProps>(), {
   preventScrollOnEntryFocus: false,
 })
 const emits = defineEmits<RovingFocusGroupEmits>()
+
 const { loop, orientation, dir: propDir } = toRefs(props)
 const dir = useDirection(propDir)
 const currentTabStopId = useVModel(props, 'currentTabStopId', emits, {
@@ -69,9 +71,7 @@ const isTabbingBackOut = ref(false)
 const isClickFocus = ref(false)
 const focusableItemsCount = ref(0)
 
-const { forwardRef, currentElement } = useForwardExpose()
-const { createCollection } = useCollection('rovingFocus')
-const collections = createCollection(currentElement)
+const { getItems } = createCollection()
 
 function handleFocus(event: FocusEvent) {
   // We normally wouldn't need this check, because we already check
@@ -91,7 +91,7 @@ function handleFocus(event: FocusEvent) {
     emits('entryFocus', entryFocusEvent)
 
     if (!entryFocusEvent.defaultPrevented) {
-      const items = collections.value
+      const items = getItems().map(i => i.ref).filter(i => i.dataset.disabled !== '')
       const activeItem = items.find(item => item.getAttribute('data-active') === 'true')
       const currentItem = items.find(
         item => item.id === currentTabStopId.value,
@@ -105,6 +105,10 @@ function handleFocus(event: FocusEvent) {
 
   isClickFocus.value = false
 }
+
+defineExpose({
+  getItems,
+})
 
 provideRovingFocusGroupContext({
   loop,
@@ -127,18 +131,19 @@ provideRovingFocusGroupContext({
 </script>
 
 <template>
-  <Primitive
-    :ref="forwardRef"
-    :tabindex="isTabbingBackOut || focusableItemsCount === 0 ? -1 : 0"
-    :data-orientation="orientation"
-    :as="as"
-    :as-child="asChild"
-    :dir="dir"
-    style="outline: none"
-    @mousedown="isClickFocus = true"
-    @focus="handleFocus"
-    @blur="isTabbingBackOut = false"
-  >
-    <slot />
-  </Primitive>
+  <CollectionSlot>
+    <Primitive
+      :tabindex="isTabbingBackOut || focusableItemsCount === 0 ? -1 : 0"
+      :data-orientation="orientation"
+      :as="as"
+      :as-child="asChild"
+      :dir="dir"
+      style="outline: none"
+      @mousedown="isClickFocus = true"
+      @focus="handleFocus"
+      @blur="isTabbingBackOut = false"
+    >
+      <slot />
+    </Primitive>
+  </CollectionSlot>
 </template>

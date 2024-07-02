@@ -1,11 +1,11 @@
 /* eslint-disable ts/ban-types */
 import { createContext } from '@/shared'
-import { type Ref, computed, defineComponent, getCurrentInstance, h, markRaw, ref, watch, watchEffect } from 'vue'
+import { type Ref, computed, defineComponent, h, markRaw, ref, watch, watchEffect } from 'vue'
 import { Slot, usePrimitiveElement } from '@/Primitive'
 
 interface CollectionContext<ItemData = {}> {
   collectionRef: Ref<HTMLElement | undefined>
-  itemMap: Ref<Map<HTMLElement, { ref: HTMLElement } & ItemData>>
+  itemMap: Ref<Map<HTMLElement, { ref: HTMLElement, value?: any } & ItemData>>
   attrName: string
 }
 
@@ -46,20 +46,21 @@ export const CollectionSlot = defineComponent({
 
 export const CollectionItem = defineComponent({
   name: 'CollectionItem',
+  inheritAttrs: false,
   setup(_, { slots, attrs }) {
     const context = injectCollectionContext()
     const { primitiveElement, currentElement } = usePrimitiveElement()
-    const vm = getCurrentInstance()
+    const { value, ...restAttrs } = attrs
 
     watchEffect((cleanupFn) => {
       if (currentElement.value) {
         const key = markRaw(currentElement.value)
-        context.itemMap.value.set(key, { ref: currentElement.value!, ...(markRaw(vm?.parent?.props ?? {})) })
+        context.itemMap.value.set(key, { ref: currentElement.value!, value })
         cleanupFn(() => context.itemMap.value.delete(key))
       }
     })
 
-    return () => h(Slot, { ...attrs, [context.attrName]: '', ref: primitiveElement }, slots)
+    return () => h(Slot, { ...restAttrs, [context.attrName]: '', ref: primitiveElement }, slots)
   },
 })
 

@@ -83,7 +83,7 @@ describe('given disabled RadioGroup', () => {
 
   it.each([[0], [1], [2]])('should have disabled attribute on item', async (input) => {
     expect(radios[input].attributes('disabled')).toBe('')
-    expect(radios[input].attributes('data-disabled')).toBe('true')
+    expect(radios[input].attributes('data-disabled')).toBe('')
   })
 })
 

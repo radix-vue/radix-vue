@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { ListboxContent, ListboxItem, ListboxRoot } from '../'
-import { countryList } from './constants'
+import { countryList } from '@/shared/constant'
 
 const options = computed(() => countryList.slice(0, 20))
 const singleControl = ref()

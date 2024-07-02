@@ -103,7 +103,7 @@ provideComboboxItemContext({
 </script>
 
 <template>
-  <CollectionItem>
+  <CollectionItem :value="value">
     <Primitive
       v-show="isInOption"
       :id="optionId"

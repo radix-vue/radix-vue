@@ -4,6 +4,12 @@ import type { CalendarRootProps } from '../'
 import { CalendarCell, CalendarCellTrigger, CalendarGrid, CalendarGridBody, CalendarGridHead, CalendarGridRow, CalendarHeadCell, CalendarHeader, CalendarHeading, CalendarNext, CalendarPrev, CalendarRoot } from '../'
 
 const props = defineProps<{ calendarProps?: CalendarRootProps, emits?: { 'onUpdate:modelValue'?: (data: DateValue) => void } }>()
+
+function pagingFunc(date: DateValue, sign: -1 | 1) {
+  if (sign === -1)
+    return date.subtract({ years: 1 })
+  return date.add({ years: 1 })
+}
 </script>
 
 <template>
@@ -15,7 +21,7 @@ const props = defineProps<{ calendarProps?: CalendarRootProps, emits?: { 'onUpda
   >
     <CalendarHeader data-testid="header">
       <CalendarPrev
-        step="year"
+        :prev-page="(date: DateValue) => pagingFunc(date, -1)"
         data-testid="prev-year-button"
       />
       <CalendarPrev
@@ -26,7 +32,7 @@ const props = defineProps<{ calendarProps?: CalendarRootProps, emits?: { 'onUpda
         data-testid="next-button"
       />
       <CalendarNext
-        step="year"
+        :next-page="(date: DateValue) => pagingFunc(date, 1)"
         data-testid="next-year-button"
       />
     </CalendarHeader>

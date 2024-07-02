@@ -68,7 +68,7 @@ provideListboxItemContext({
 </script>
 
 <template>
-  <CollectionItem>
+  <CollectionItem :value="value">
     <Primitive
       :id="id"
       :ref="forwardRef"

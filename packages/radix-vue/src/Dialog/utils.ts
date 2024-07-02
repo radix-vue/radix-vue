@@ -1,29 +1,42 @@
-import { onMounted } from 'vue'
-import { injectDialogRootContext } from './DialogRoot.vue'
+import { type Ref, onMounted } from 'vue'
 
-export function useWarning() {
-  const CONTENT_NAME = 'DialogContent'
-  const TITLE_NAME = 'DialogTitle'
+const DEFAULT_TITLE_NAME = 'DialogTitle'
+const DEFAULT_CONTENT_NAME = 'DialogContent'
 
-  const rootContext = injectDialogRootContext()
+export type WarningProps = {
+  titleName?: string
+  contentName?: string
+  componentLink?: string
+  titleId: string
+  descriptionId: string
+  contentElement: Ref<HTMLElement | undefined>
+}
 
-  const TITLE_MESSAGE = `Warning: \`${CONTENT_NAME}\` requires a \`${TITLE_NAME}\` for the component to be accessible for screen reader users.
+export function useWarning({
+  titleName = DEFAULT_TITLE_NAME,
+  contentName = DEFAULT_CONTENT_NAME,
+  componentLink = 'dialog.html#title',
+  titleId,
+  descriptionId,
+  contentElement,
+}: WarningProps) {
+  const TITLE_MESSAGE = `Warning: \`${contentName}\` requires a \`${titleName}\` for the component to be accessible for screen reader users.
 
-If you want to hide the \`${TITLE_NAME}\`, you can wrap it with our VisuallyHidden component.
+If you want to hide the \`${titleName}\`, you can wrap it with our VisuallyHidden component.
 
-For more information, see https://www.radix-vue.com/components/dialog.html#title;`
+For more information, see https://www.radix-vue.com/components/${componentLink}`
 
-  const DESCRIPTION_MESSAGE = `Warning: Missing \`Description\` or \`aria-describedby="undefined"\` for ${CONTENT_NAME}.`
+  const DESCRIPTION_MESSAGE = `Warning: Missing \`Description\` or \`aria-describedby="undefined"\` for ${contentName}.`
 
   onMounted(() => {
-    const hasTitle = document.getElementById(rootContext.titleId)
+    const hasTitle = document.getElementById(titleId)
     if (!hasTitle)
       console.warn(TITLE_MESSAGE)
 
-    const describedById = rootContext.contentElement.value?.getAttribute('aria-describedby')
+    const describedById = contentElement.value?.getAttribute('aria-describedby')
     // if we have an id and the user hasn't set aria-describedby="undefined"
-    if (rootContext.descriptionId && describedById) {
-      const hasDescription = document.getElementById(rootContext.descriptionId)
+    if (descriptionId && !describedById) {
+      const hasDescription = document.getElementById(descriptionId)
       if (!hasDescription)
         console.warn(DESCRIPTION_MESSAGE)
     }

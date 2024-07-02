@@ -3,7 +3,7 @@ import ToggleGroup from './story/_ToggleGroup.vue'
 import type { DOMWrapper, VueWrapper } from '@vue/test-utils'
 import { mount } from '@vue/test-utils'
 import { axe } from 'vitest-axe'
-import { nextTick, ref } from 'vue'
+import { nextTick } from 'vue'
 
 describe('given default Toggle Group', () => {
   let wrapper: VueWrapper<InstanceType<typeof ToggleGroup>>

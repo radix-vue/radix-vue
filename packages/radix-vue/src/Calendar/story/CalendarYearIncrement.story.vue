@@ -1,6 +1,13 @@
 <script setup lang="ts">
 import { Icon } from '@iconify/vue'
 import { CalendarCell, CalendarCellTrigger, CalendarGrid, CalendarGridBody, CalendarGridHead, CalendarGridRow, CalendarHeadCell, CalendarHeader, CalendarHeading, CalendarNext, CalendarPrev, CalendarRoot } from '../'
+import type { DateValue } from '@internationalized/date'
+
+function paging(date: DateValue, sign: -1 | 1) {
+  if (sign === -1)
+    return date.subtract({ years: 1 })
+  return date.add({ years: 1 })
+}
 </script>
 
 <template>
@@ -15,7 +22,7 @@ import { CalendarCell, CalendarCellTrigger, CalendarGrid, CalendarGridBody, Cale
       >
         <CalendarHeader class="flex items-center justify-between">
           <CalendarPrev
-            step="year"
+            :prev-page="(date: DateValue) => paging(date, -1)"
             class="inline-flex items-center cursor-pointer text-black justify-center rounded-[9px] bg-transparent w-10 h-10 hover:bg-black hover:text-white active:scale-98 active:transition-all focus:shadow-[0_0_0_2px] focus:shadow-black"
           >
             <Icon
@@ -43,7 +50,7 @@ import { CalendarCell, CalendarCellTrigger, CalendarGrid, CalendarGridBody, Cale
             />
           </CalendarNext>
           <CalendarNext
-            step="year"
+            :next-page="(date: DateValue) => paging(date, 1)"
             class="inline-flex items-center cursor-pointer text-black justify-center rounded-[9px] bg-transparent w-10 h-10 hover:bg-black hover:text-white active:scale-98 active:transition-all focus:shadow-[0_0_0_2px] focus:shadow-black"
           >
             <Icon

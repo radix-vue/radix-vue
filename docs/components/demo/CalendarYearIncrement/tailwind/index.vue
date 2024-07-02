@@ -1,9 +1,16 @@
 <script setup lang="ts">
 import { Icon } from '@iconify/vue'
+import type { DateValue } from '@internationalized/date'
 import { CalendarCell, CalendarCellTrigger, CalendarGrid, CalendarGridBody, CalendarGridHead, CalendarGridRow, CalendarHeadCell, CalendarHeader, CalendarHeading, CalendarNext, CalendarPrev, CalendarRoot, type CalendarRootProps } from 'radix-vue'
 
 const isDateUnavailable: CalendarRootProps['isDateUnavailable'] = (date) => {
   return date.day === 17 || date.day === 18
+}
+
+function pagingFunc(date: DateValue, sign: -1 | 1) {
+  if (sign === -1)
+    return date.subtract({ years: 1 })
+  return date.add({ years: 1 })
 }
 </script>
 
@@ -17,7 +24,7 @@ const isDateUnavailable: CalendarRootProps['isDateUnavailable'] = (date) => {
     <CalendarHeader class="flex items-center justify-between">
       <CalendarPrev
         class="inline-flex items-center cursor-pointer text-black justify-center rounded-[9px] bg-transparent w-8 h-8 hover:bg-black hover:text-white active:scale-98 active:transition-all focus:shadow-[0_0_0_2px] focus:shadow-black"
-        step="year"
+        :prev-page="(date: DateValue) => pagingFunc(date, -1)"
       >
         <Icon
           icon="radix-icons:double-arrow-left"
@@ -45,7 +52,7 @@ const isDateUnavailable: CalendarRootProps['isDateUnavailable'] = (date) => {
 
       <CalendarNext
         class="inline-flex items-center cursor-pointer justify-center text-black rounded-[9px] bg-transparent w-8 h-8 hover:bg-black hover:text-white active:scale-98 active:transition-all focus:shadow-[0_0_0_2px] focus:shadow-black"
-        step="year"
+        :next-page="(date: DateValue) => pagingFunc(date, 1)"
       >
         <Icon
           icon="radix-icons:double-arrow-right"

@@ -2,7 +2,7 @@
 import { computed, ref } from 'vue'
 import type { ListboxRootEmits, ListboxRootProps } from '../'
 import { ListboxContent, ListboxItem, ListboxRoot } from '../'
-import { countryList } from './constants'
+import { countryList } from '@/shared/constant'
 import { useForwardPropsEmits } from '@/shared'
 
 const props = defineProps<ListboxRootProps>()

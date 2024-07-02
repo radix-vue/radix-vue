@@ -15,6 +15,12 @@
     'required': false
   },
   {
+    'name': 'nextPage',
+    'description': '<p>The function to be used for the next page. Overwrites the <code>nextPage</code> function set on the <code>CalendarRoot</code>.</p>\n',
+    'type': '((placeholder: DateValue) => DateValue)',
+    'required': false
+  },
+  {
     'name': 'step',
     'description': '<p>The calendar unit to go forward</p>\n',
     'type': '\'month\' | \'year\'',

@@ -8,6 +8,12 @@ const persianCalendar = ref({ start: toCalendar(defaultValue.start, new PersianC
 const modelValue = ref(defaultValue) as Ref<{ start: DateValue, end: DateValue }>
 
 const placeholder = ref(new CalendarDate(2024, 4, 1)) as Ref<CalendarDate>
+
+function paging(date: DateValue, sign: -1 | 1) {
+  if (sign === -1)
+    return date.subtract({ years: 1 })
+  return date.add({ years: 1 })
+}
 </script>
 
 <template>
@@ -72,6 +78,14 @@ const placeholder = ref(new CalendarDate(2024, 4, 1)) as Ref<CalendarDate>
 
     <Variant title="Different calendar">
       <RangeCalendar :default-value="persianCalendar" />
+    </Variant>
+
+    <Variant title="Pagination functions">
+      <RangeCalendar
+        :default-value="defaultValue"
+        :prev-page="(date: DateValue) => paging(date, -1)"
+        :next-page="(date:DateValue) => paging(date, 1)"
+      />
     </Variant>
   </Story>
 </template>

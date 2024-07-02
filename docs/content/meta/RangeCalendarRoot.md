@@ -98,6 +98,12 @@
     'required': false
   },
   {
+    'name': 'nextPage',
+    'description': '<p>A function that returns the next page of the calendar. It receives the current placeholder as an argument inside the component.</p>\n',
+    'type': '((placeholder: DateValue) => DateValue)',
+    'required': false
+  },
+  {
     'name': 'numberOfMonths',
     'description': '<p>The number of months to display at once</p>\n',
     'type': 'number',
@@ -123,6 +129,12 @@
     'type': 'boolean',
     'required': false,
     'default': 'false'
+  },
+  {
+    'name': 'prevPage',
+    'description': '<p>A function that returns the previous page of the calendar. It receives the current placeholder as an argument inside the component.</p>\n',
+    'type': '((placeholder: DateValue) => DateValue)',
+    'required': false
   },
   {
     'name': 'readonly',

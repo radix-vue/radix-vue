@@ -28,14 +28,3 @@ export function compare<T>(value?: T, currentValue?: T, comparator?: string | ((
 
   return isEqual(value, currentValue)
 }
-
-export function findValuesBetween<T>(array: T[], start: T, end: T) {
-  const startIndex = array.findIndex(i => isEqual(i, start))
-  const endIndex = array.findIndex(i => isEqual(i, end))
-  if (startIndex === -1 || endIndex === -1)
-    return []
-
-  const [minIndex, maxIndex] = [startIndex, endIndex].sort((a, b) => a - b)
-
-  return array.slice(minIndex, maxIndex + 1)
-}

@@ -13,9 +13,10 @@ export interface ListboxVirtualizerProps<T extends AcceptableValue = AcceptableV
 import { useVirtualizer } from '@tanstack/vue-virtual'
 import { type Ref, cloneVNode, computed, useSlots } from 'vue'
 import { injectListboxRootContext } from './ListboxRoot.vue'
-import { compare, findValuesBetween, queryCheckedElement } from './utils'
+import { compare, queryCheckedElement } from './utils'
 import { MAP_KEY_TO_FOCUS_INTENT } from '@/RovingFocus/utils'
 import { refAutoReset } from '@vueuse/shared'
+import { findValuesBetween } from '@/shared'
 import { getNextMatch } from '@/shared/useTypeahead'
 import { useParentElement } from '@vueuse/core'
 import { useCollection } from '@/Collection'
@@ -71,7 +72,7 @@ const virtualizedItems = computed(() => virtualizer.value.getVirtualItems().map(
     is: cloneVNode(slots.default!({
       option: props.options[item.index],
     })![0], {
-      'key': `${item.index}`,
+      'key': `${item.key}`,
       'data-index': item.index,
       'aria-setsize': props.options.length,
       'aria-posinset': item.index + 1,

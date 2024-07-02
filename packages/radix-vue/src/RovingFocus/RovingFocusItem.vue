@@ -5,6 +5,7 @@ export interface RovingFocusItemProps extends PrimitiveProps {
   tabStopId?: string
   focusable?: boolean
   active?: boolean
+  allowShiftKey?: boolean
 }
 </script>
 
@@ -13,7 +14,8 @@ import { computed, nextTick, onMounted, onUnmounted } from 'vue'
 import { injectRovingFocusGroupContext } from './RovingFocusGroup.vue'
 import { Primitive } from '@/Primitive'
 import { focusFirst, getFocusIntent, wrapArray } from './utils'
-import { useCollection, useId } from '@/shared'
+import { useId } from '@/shared'
+import { CollectionItem, useCollection } from '@/Collection'
 
 const props = withDefaults(defineProps<RovingFocusItemProps>(), {
   focusable: true,
@@ -27,8 +29,7 @@ const isCurrentTabStop = computed(
   () => context.currentTabStopId.value === id.value,
 )
 
-const { injectCollection } = useCollection('rovingFocus')
-const collections = injectCollection()
+const { getItems } = useCollection()
 
 onMounted(() => {
   if (props.focusable)
@@ -55,10 +56,10 @@ function handleKeydown(event: KeyboardEvent) {
   )
 
   if (focusIntent !== undefined) {
-    if (event.metaKey || event.ctrlKey || event.altKey || event.shiftKey)
+    if (event.metaKey || event.ctrlKey || event.altKey || (props.allowShiftKey ? false : event.shiftKey))
       return
     event.preventDefault()
-    let candidateNodes = [...collections.value]
+    let candidateNodes = [...getItems().map(i => i.ref).filter(i => i.dataset.disabled !== '')]
 
     if (focusIntent === 'last') {
       candidateNodes.reverse()
@@ -81,26 +82,27 @@ function handleKeydown(event: KeyboardEvent) {
 </script>
 
 <template>
-  <Primitive
-    data-radix-vue-collection-item
-    :tabindex="isCurrentTabStop ? 0 : -1"
-    :data-orientation="context.orientation.value"
-    :data-active="active"
-    :data-disabled="!focusable || undefined"
-    :as="as"
-    :as-child="asChild"
-    @mousedown="
-      (event) => {
-        // We prevent focusing non-focusable items on `mousedown`.
-        // Even though the item has tabIndex={-1}, that only means take it out of the tab order.
-        if (!focusable) event.preventDefault();
-        // Safari doesn't focus a button when clicked so we run our logic on mousedown also
-        else context.onItemFocus(id);
-      }
-    "
-    @focus="context.onItemFocus(id)"
-    @keydown="handleKeydown"
-  >
-    <slot />
-  </Primitive>
+  <CollectionItem>
+    <Primitive
+      :tabindex="isCurrentTabStop ? 0 : -1"
+      :data-orientation="context.orientation.value"
+      :data-active="active"
+      :data-disabled="!focusable ? '' : undefined"
+      :as="as"
+      :as-child="asChild"
+      @mousedown="
+        (event) => {
+          // We prevent focusing non-focusable items on `mousedown`.
+          // Even though the item has tabIndex={-1}, that only means take it out of the tab order.
+          if (!focusable) event.preventDefault();
+          // Safari doesn't focus a button when clicked so we run our logic on mousedown also
+          else context.onItemFocus(id);
+        }
+      "
+      @focus="context.onItemFocus(id)"
+      @keydown="handleKeydown"
+    >
+      <slot />
+    </Primitive>
+  </CollectionItem>
 </template>

@@ -34,10 +34,10 @@ type CalendarRootContext = {
   isDateSelected: Matcher
   isDateUnavailable?: Matcher
   isOutsideVisibleView: (date: DateValue) => boolean
-  prevPage: (step?: CalendarIncrement) => void
-  nextPage: (step?: CalendarIncrement) => void
-  isNextButtonDisabled: (step?: CalendarIncrement) => boolean
-  isPrevButtonDisabled: (step?: CalendarIncrement) => boolean
+  prevPage: (step?: CalendarIncrement, prevPageFunc?: (date: DateValue) => DateValue) => void
+  nextPage: (step?: CalendarIncrement, nextPageFunc?: (date: DateValue) => DateValue) => void
+  isNextButtonDisabled: (step?: CalendarIncrement, nextPageFunc?: (date: DateValue) => DateValue) => boolean
+  isPrevButtonDisabled: (step?: CalendarIncrement, prevPageFunc?: (date: DateValue) => DateValue) => boolean
   formatter: Formatter
   dir: Ref<Direction>
 }
@@ -81,6 +81,10 @@ interface BaseCalendarRootProps extends PrimitiveProps {
   isDateUnavailable?: Matcher
   /** The reading direction of the calendar when applicable. <br> If omitted, inherits globally from `ConfigProvider` or assumes LTR (left-to-right) reading mode. */
   dir?: Direction
+  /** A function that returns the next page of the calendar. It receives the current placeholder as an argument inside the component. */
+  nextPage?: (placeholder: DateValue) => DateValue
+  /** A function that returns the previous page of the calendar. It receives the current placeholder as an argument inside the component. */
+  prevPage?: (placeholder: DateValue) => DateValue
 }
 
 export interface MultipleCalendarRootProps extends BaseCalendarRootProps {
@@ -169,6 +173,8 @@ const {
   isDateUnavailable: propsIsDateUnavailable,
   calendarLabel,
   defaultValue,
+  nextPage: propsNextPage,
+  prevPage: propsPrevPage,
   dir: propDir,
 } = toRefs(props)
 
@@ -222,6 +228,8 @@ const {
   isDateDisabled: propsIsDateDisabled.value,
   isDateUnavailable: propsIsDateUnavailable.value,
   calendarLabel,
+  nextPage: propsNextPage,
+  prevPage: propsPrevPage,
 })
 
 const {

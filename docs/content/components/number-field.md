@@ -8,6 +8,8 @@ aria: https://www.w3.org/WAI/ARIA/apg/patterns/spinbutton
 
 # Number Field
 
+<Badge>Alpha</Badge>
+
 <Description>
 A number field allows a user to enter a number and increment or decrement the value using stepper buttons.
 </Description>

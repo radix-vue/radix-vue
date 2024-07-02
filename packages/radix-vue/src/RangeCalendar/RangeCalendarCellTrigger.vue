@@ -22,6 +22,13 @@ import { Primitive, usePrimitiveElement } from '@/Primitive'
 import { injectRangeCalendarRootContext } from './RangeCalendarRoot.vue'
 
 const props = withDefaults(defineProps<RangeCalendarCellTriggerProps>(), { as: 'div' })
+defineSlots<{
+  default: (props: {
+    /** Current day */
+    dayValue: string
+  }) => any
+}>()
+
 const rootContext = injectRangeCalendarRootContext()
 
 const kbd = useKbd()
@@ -56,6 +63,8 @@ const isOutsideView = computed(() => {
 const isOutsideVisibleView = computed(() =>
   rootContext.isOutsideVisibleView(props.day),
 )
+
+const dayValue = computed(() => props.day.day.toLocaleString(rootContext.locale.value))
 
 const isFocusedDate = computed(() => {
   return isSameDay(props.day, rootContext.placeholder.value)
@@ -209,8 +218,8 @@ function handleArrowKey(e: KeyboardEvent) {
     @mouseenter="handleFocus"
     @keydown.up.down.left.right.enter.space="handleArrowKey"
   >
-    <slot>
-      {{ day.day.toLocaleString(rootContext.locale.value) }}
+    <slot :day-value="dayValue">
+      {{ dayValue }}
     </slot>
   </Primitive>
 </template>
