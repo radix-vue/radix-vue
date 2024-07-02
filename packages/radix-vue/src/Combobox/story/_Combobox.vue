@@ -1,21 +1,23 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { ComboboxAnchor, ComboboxContent, ComboboxEmpty, ComboboxGroup, ComboboxInput, ComboboxItem, ComboboxItemIndicator, ComboboxLabel, ComboboxRoot, type ComboboxRootProps, ComboboxSeparator, ComboboxTrigger, ComboboxViewport } from '../'
+import { ComboboxAnchor, ComboboxContent, ComboboxEmpty, ComboboxGroup, ComboboxInput, ComboboxItem, ComboboxItemIndicator, ComboboxLabel, ComboboxRoot, type ComboboxRootEmits, type ComboboxRootProps, ComboboxSeparator, ComboboxTrigger, ComboboxViewport } from '../'
 import { Icon } from '@iconify/vue'
+import { useForwardPropsEmits } from '@/shared'
 
 const props = defineProps<ComboboxRootProps>()
+const emits = defineEmits<ComboboxRootEmits>()
+
+const forwarded = useForwardPropsEmits(props, emits)
 const v = ref<any>(props.multiple ? [] : '')
+
 const options = ['Apple', 'Banana', 'Blueberry', 'Grapes', 'Pineapple']
 const vegetables = ['Aubergine', 'Broccoli', 'Carrot', 'Courgette', 'Leek']
-
-const open = ref(props.open)
 </script>
 
 <template>
   <ComboboxRoot
-    v-bind="props"
+    v-bind="forwarded"
     v-model="v"
-    v-model:open="open"
     name="test"
   >
     <ComboboxAnchor class="min-w-[160px] inline-flex items-center justify-between rounded px-[15px] text-[13px] leading-none h-[35px] gap-[5px] bg-white text-grass11 shadow-[0_2px_10px] shadow-black/10 hover:bg-mauve3 focus:shadow-[0_0_0_2px] focus:shadow-black data-[placeholder]:text-grass9 outline-none">

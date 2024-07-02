@@ -115,7 +115,9 @@ function onValueChange(val: T) {
   if (Array.isArray(modelValue.value)) {
     const index = modelValue.value.findIndex(i => compare(i, val, props.by))
     if (props.selectionBehavior === 'toggle') {
-      index === -1 ? modelValue.value.push(val) : modelValue.value.splice(index, 1)
+      const modelArray = [...modelValue.value]
+      index === -1 ? modelArray.push(val) : modelArray.splice(index, 1)
+      modelValue.value = modelArray
     }
     else {
       modelValue.value = [val]

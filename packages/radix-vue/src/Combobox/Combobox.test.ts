@@ -10,6 +10,7 @@ import { handleSubmit } from '@/test'
 describe('given default Combobox', () => {
   let wrapper: VueWrapper<InstanceType<typeof Combobox>>
   let valueBox: DOMWrapper<HTMLInputElement>
+  let items: DOMWrapper<Element>[]
   window.HTMLElement.prototype.releasePointerCapture = vi.fn()
   window.HTMLElement.prototype.hasPointerCapture = vi.fn()
   window.HTMLElement.prototype.scrollIntoView = vi.fn()
@@ -41,6 +42,7 @@ describe('given default Combobox', () => {
     beforeEach(async () => {
       await wrapper.find('button').trigger('click')
       await nextTick()
+      items = wrapper.findAll('[role=option]')
     })
 
     it('should pass axe accessibility tests', async () => {
@@ -73,7 +75,7 @@ describe('given default Combobox', () => {
 
     describe('after selecting a value', () => {
       beforeEach(async () => {
-        const selection = wrapper.findAll('[role=option]')[1]
+        const selection = items[1]
         await selection.trigger('click')
       })
 
@@ -86,6 +88,10 @@ describe('given default Combobox', () => {
         expect(group.exists()).toBeFalsy()
       })
 
+      it('should emit `update:modelValue` event', () => {
+        expect(wrapper.emitted('update:modelValue')?.[0]?.[0]).toBe(items[1].text())
+      })
+
       describe('after opening the modal again', () => {
         beforeEach(async () => {
           await wrapper.find('button').trigger('click')
@@ -93,12 +99,12 @@ describe('given default Combobox', () => {
         })
 
         it('should focus on the selected value', () => {
-          const selection = wrapper.findAll('[role=option]')[1]
+          const selection = items[1]
           expect(selection.attributes('data-state')).toBe('checked')
         })
 
         it('should render the icon', () => {
-          const selection = wrapper.findAll('[role=option]')[1]
+          const selection = items[1]
           expect(selection.html()).toContain('svg')
         })
       })
@@ -141,6 +147,7 @@ describe('given default Combobox', () => {
 describe('given a Combobox with multiple prop', async () => {
   let wrapper: VueWrapper<InstanceType<typeof Combobox>>
   let valueBox: DOMWrapper<HTMLInputElement>
+  let items: DOMWrapper<Element>[]
 
   beforeEach(() => {
     document.body.innerHTML = ''
@@ -152,6 +159,7 @@ describe('given a Combobox with multiple prop', async () => {
     beforeEach(async () => {
       await wrapper.find('button').trigger('click')
       await nextTick()
+      items = wrapper.findAll('[role=option]')
     })
 
     it('should show the popup content', () => {
@@ -160,7 +168,7 @@ describe('given a Combobox with multiple prop', async () => {
 
     describe('after selecting a value', () => {
       beforeEach(async () => {
-        const selection = wrapper.findAll('[role=option]')[1]
+        const selection = items[1]
         await selection.trigger('click')
       })
 
@@ -171,6 +179,10 @@ describe('given a Combobox with multiple prop', async () => {
       it('should keep popup open', () => {
         const group = wrapper.find('[role=group]')
         expect(group.exists()).toBeTruthy()
+      })
+
+      it('should emit `update:modelValue` event', () => {
+        expect(wrapper.emitted('update:modelValue')?.[0]?.[0]).toEqual([items[1].text()])
       })
     })
   })
