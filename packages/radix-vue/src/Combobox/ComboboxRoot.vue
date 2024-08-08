@@ -6,10 +6,10 @@ import { createContext, useDirection, useFormControl, useForwardExpose } from '@
 import { createCollection } from '@/Collection'
 
 export type AcceptableValue = string | number | boolean | Record<string, any>
-type ArrayOrWrapped<T> = T extends any[] ? T : Array<T>
+type ArrayOrWrapped<T> = T extends ReadonlyArray<any> ? T : ReadonlyArray<T>
 
 type ComboboxRootContext<T> = {
-  modelValue: Ref<T | Array<T>>
+  modelValue: Ref<T | ReadonlyArray<T>>
   onValueChange: (val: T) => void
   searchTerm: Ref<string>
   multiple: Ref<boolean>
@@ -17,7 +17,7 @@ type ComboboxRootContext<T> = {
   open: Ref<boolean>
   onOpenChange: (value: boolean) => void
   isUserInputted: Ref<boolean>
-  filteredOptions: Ref<Array<T>>
+  filteredOptions: Ref<ReadonlyArray<T>>
   contentId: string
   contentElement: Ref<HTMLElement | undefined>
   onContentElementChange: (el: HTMLElement) => void
@@ -47,9 +47,9 @@ export type ComboboxRootEmits<T = AcceptableValue> = {
 
 export interface ComboboxRootProps<T = AcceptableValue> extends PrimitiveProps {
   /** The controlled value of the Combobox. Can be binded-with with `v-model`. */
-  modelValue?: T | Array<T>
+  modelValue?: T | ReadonlyArray<T>
   /** The value of the combobox when initially rendered. Use when you do not need to control the state of the Combobox */
-  defaultValue?: T | Array<T>
+  defaultValue?: T | ReadonlyArray<T>
   /** The controlled open state of the Combobox. Can be binded-with with `v-model:open`. */
   open?: boolean
   /** The open state of the combobox when it is initially rendered. <br> Use when you do not need to control its open state. */
@@ -167,7 +167,7 @@ const contentElement = ref<HTMLElement>()
 const { forwardRef, currentElement: parentElement } = useForwardExpose()
 const { getItems, reactiveItems, itemMapSize } = createCollection<{ value: T }>('data-radix-vue-combobox-item')
 
-const options = ref<T[]>([]) as Ref<T[]>
+const options = ref<ReadonlyArray<T>>([]) as Ref<ReadonlyArray<T>>
 
 watch(() => itemMapSize.value, () => {
   options.value = getItems().map(i => i.value)
@@ -179,7 +179,7 @@ watch(() => itemMapSize.value, () => {
 const filteredOptions = computed(() => {
   if (isUserInputted.value) {
     if (props.filterFunction)
-      return props.filterFunction(options.value as ArrayOrWrapped<T>, searchTerm.value) as T[]
+      return props.filterFunction(options.value as ArrayOrWrapped<T>, searchTerm.value) as ReadonlyArray<T>
 
     // The default filter only compares strings
     const optionsWithTypeString = options.value.filter(i => typeof i === 'string') as string[]

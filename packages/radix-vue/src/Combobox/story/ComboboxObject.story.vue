@@ -18,7 +18,7 @@ const v = ref(people[0])
 
 const filteredPeople = computed(() => people.filter(i => i.name.toLowerCase().includes(searchTerm.value.toLowerCase())))
 const filteredVege = computed(() => vegetables.filter(i => i.name.toLowerCase().includes(searchTerm.value.toLowerCase())))
-function filterFunction(list: any[], term: string) {
+function filterFunction(list: ReadonlyArray<any>, term: string) {
   return list.filter(i => i.name.toLowerCase().includes(term.toLowerCase()))
 }
 
