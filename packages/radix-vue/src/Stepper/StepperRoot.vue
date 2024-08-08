@@ -134,6 +134,16 @@ provideStepperRootContext({
   linear,
   totalStepperItems,
 })
+
+defineExpose({
+  modelValue,
+  totalSteps: totalStepperItems.value.size,
+  isNextDisabled,
+  isPrevDisabled,
+  isFirstStep,
+  isLastStep,
+  goToStep,
+})
 </script>
 
 <template>
