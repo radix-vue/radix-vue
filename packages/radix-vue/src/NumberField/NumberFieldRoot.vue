@@ -68,6 +68,20 @@ const props = withDefaults(defineProps<NumberFieldRootProps>(), {
   step: 1,
 })
 const emits = defineEmits<NumberFieldRootEmits>()
+
+defineSlots<{
+  default: (props: {
+    /** Current field value */
+    modelValue: typeof modelValue.value
+    /** Current field string value */
+    textValue: string
+    /** Handle increase with custom multiplier */
+    handleIncrease: (multiplier?: number) => void
+    /** Handle decrease with custom multiplier */
+    handleDecrease: (multiplier?: number) => void
+  }) => any
+}>()
+
 const { disabled, min, max, step, locale, formatOptions, id } = toRefs(props)
 
 const modelValue = useVModel(props, 'modelValue', emits, {
@@ -203,6 +217,8 @@ provideNumberFieldRootContext({
     <slot
       :model-value="modelValue"
       :text-value="textValue"
+      :handle-increase="handleIncrease"
+      :handle-decrease="handleDecrease"
     />
   </Primitive>
 
