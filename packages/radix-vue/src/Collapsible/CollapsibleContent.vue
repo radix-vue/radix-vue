@@ -8,6 +8,10 @@ export interface CollapsibleContentProps extends PrimitiveProps {
    * controlling animation with Vue animation libraries.
    */
   forceMount?: boolean
+  /**
+   * Used to disable animations, useful during drag operations
+   */
+  disableAnimation?: boolean
 }
 </script>
 
@@ -23,7 +27,9 @@ defineOptions({
   inheritAttrs: false,
 })
 
-const props = defineProps<CollapsibleContentProps>()
+const props = withDefaults(defineProps<CollapsibleContentProps>(), {
+  disableAnimation: false,
+})
 
 const rootContext = injectCollapsibleRootContext()
 rootContext.contentId ||= useId(undefined, 'radix-vue-collapsible-content')
@@ -39,10 +45,12 @@ const height = ref(0)
 const isOpen = computed(() => rootContext.open.value)
 const isMountAnimationPrevented = ref(isOpen.value)
 const currentStyle = ref<Record<string, string>>()
+const isAnimating = ref(false)
+const lastOpenState = ref(isOpen.value)
 
 watch(
   () => [isOpen.value, presentRef.value?.present],
-  async () => {
+  async ([newOpenState]) => {
     await nextTick()
     const node = currentElement.value
     if (!node)
@@ -51,6 +59,17 @@ watch(
       transitionDuration: node.style.transitionDuration,
       animationName: node.style.animationName,
     }
+
+    if (newOpenState !== lastOpenState.value && !props.disableAnimation) {
+      isAnimating.value = true
+      lastOpenState.value = newOpenState
+
+      const animationDuration = parseFloat(getComputedStyle(node).transitionDuration) * 1000
+      setTimeout(() => {
+        isAnimating.value = false
+      }, animationDuration)
+    }
+
     // block any animations/transitions so the element renders at its full dimensions
     node.style.transitionDuration = '0s'
     node.style.animationName = 'none'
@@ -61,7 +80,8 @@ watch(
     width.value = rect.width
 
     // kick off any animations/transitions that were originally set up if it isn't the initial mount
-    if (!isMountAnimationPrevented.value) {
+    // and animations are not disabled
+    if (!isMountAnimationPrevented.value && !props.disableAnimation) {
       node.style.transitionDuration = currentStyle.value.transitionDuration
       node.style.animationName = currentStyle.value.animationName
     }
@@ -75,6 +95,20 @@ onMounted(() => {
   requestAnimationFrame(() => {
     isMountAnimationPrevented.value = false
   })
+})
+
+const contentStyle = computed(() => {
+  const style: Record<string, string> = {
+    [`--radix-collapsible-content-height`]: `${height.value}px`,
+    [`--radix-collapsible-content-width`]: `${width.value}px`,
+  }
+
+  if (props.disableAnimation && !isAnimating.value) {
+    style.animation = 'none'
+    style.transition = 'none'
+  }
+
+  return style
 })
 </script>
 
@@ -93,10 +127,7 @@ onMounted(() => {
       :data-state="rootContext.open.value ? 'open' : 'closed'"
       :data-disabled="rootContext.disabled?.value ? '' : undefined"
       :hidden="!presentRef?.present"
-      :style="{
-        [`--radix-collapsible-content-height`]: `${height}px`,
-        [`--radix-collapsible-content-width`]: `${width}px`,
-      }"
+      :style="contentStyle"
     >
       <slot v-if="presentRef?.present" />
     </Primitive>
