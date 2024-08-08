@@ -2,6 +2,7 @@ import { type Ref, watchEffect } from 'vue'
 import type { ResizeHandler } from '../types'
 import { assert } from '../assert'
 import { getResizeHandleElement, getResizeHandleElementIndex, getResizeHandleElementsForGroup } from '../dom'
+import { useEventListener } from '@vueuse/core'
 
 // https://www.w3.org/WAI/ARIA/apg/patterns/windowsplitter/
 
@@ -16,7 +17,7 @@ export function useWindowSplitterResizeHandlerBehavior({
   resizeHandler: Ref<ResizeHandler | null>
   panelGroupElement: Ref<ParentNode | null>
 }): void {
-  watchEffect((onCleanup) => {
+  watchEffect(() => {
     const _panelGroupElement = panelGroupElement.value
     if (disabled.value || resizeHandler.value === null || _panelGroupElement === null)
       return
@@ -75,9 +76,6 @@ export function useWindowSplitterResizeHandlerBehavior({
       }
     }
 
-    handleElement.addEventListener('keydown', onKeyDown)
-    onCleanup(() => {
-      handleElement.removeEventListener('keydown', onKeyDown)
-    })
+    useEventListener(handleElement, 'keydown', onKeyDown)
   })
 }

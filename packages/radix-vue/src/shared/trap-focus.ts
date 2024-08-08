@@ -1,3 +1,5 @@
+import { useEventListener } from '@vueuse/core'
+
 export function trapFocus(element: HTMLElement) {
   if (element) {
     const focusableEls = [
@@ -18,7 +20,7 @@ export function trapFocus(element: HTMLElement) {
     if (firstFocusableEl)
       firstFocusableEl.focus()
 
-    element.addEventListener('keydown', (e) => {
+    useEventListener(element, 'keydown', (e) => {
       const isTabPressed = e.key === 'Tab' || e.keyCode === KEYCODE_TAB
 
       if (!isTabPressed)
@@ -38,6 +40,7 @@ export function trapFocus(element: HTMLElement) {
         }
       }
     })
+
     return firstFocusableEl
   }
 }

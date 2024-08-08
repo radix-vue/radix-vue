@@ -1,6 +1,7 @@
 import { type Ref, ref, watchEffect } from 'vue'
 import type { Side } from '@/Popper/utils'
 import { createEventHook, refAutoReset } from '@vueuse/shared'
+import { useEventListener } from '@vueuse/core'
 
 export function useGraceArea(triggerElement: Ref<HTMLElement | undefined>, containerElement: Ref<HTMLElement | undefined>) {
 // Reset the inTransit state if idle/scrolled.
@@ -25,22 +26,17 @@ export function useGraceArea(triggerElement: Ref<HTMLElement | undefined>, conta
     isPointerInTransit.value = true
   }
 
-  watchEffect((cleanupFn) => {
+  watchEffect(() => {
     if (triggerElement.value && containerElement.value) {
       const handleTriggerLeave = (event: PointerEvent) => handleCreateGraceArea(event, containerElement.value!)
       const handleContentLeave = (event: PointerEvent) => handleCreateGraceArea(event, triggerElement.value!)
 
-      triggerElement.value.addEventListener('pointerleave', handleTriggerLeave)
-      containerElement.value.addEventListener('pointerleave', handleContentLeave)
-
-      cleanupFn(() => {
-        triggerElement.value?.removeEventListener('pointerleave', handleTriggerLeave)
-        containerElement.value?.removeEventListener('pointerleave', handleContentLeave)
-      })
+      useEventListener(triggerElement, 'pointerleave', handleTriggerLeave)
+      useEventListener(containerElement, 'pointerleave', handleContentLeave)
     }
   })
 
-  watchEffect((cleanupFn) => {
+  watchEffect(() => {
     if (pointerGraceArea.value) {
       const handleTrackPointerGrace = (event: PointerEvent) => {
         if (!pointerGraceArea.value)
@@ -59,9 +55,8 @@ export function useGraceArea(triggerElement: Ref<HTMLElement | undefined>, conta
           pointerExit.trigger()
         }
       }
-      document.addEventListener('pointermove', handleTrackPointerGrace)
 
-      cleanupFn(() => document.removeEventListener('pointermove', handleTrackPointerGrace))
+      useEventListener(document, 'pointermove', handleTrackPointerGrace)
     }
   })
 
@@ -211,11 +206,9 @@ function getHullPresorted<P extends Point>(points: Readonly<Array<P>>): Array<P>
     && lowerHull.length === 1
     && upperHull[0].x === lowerHull[0].x
     && upperHull[0].y === lowerHull[0].y
-  ) {
+  )
     return upperHull
-  }
 
-  else {
+  else
     return upperHull.concat(lowerHull)
-  }
 }

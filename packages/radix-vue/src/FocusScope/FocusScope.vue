@@ -35,6 +35,7 @@ export interface FocusScopeProps extends PrimitiveProps {
 
 <script setup lang="ts">
 import { nextTick, reactive, ref, watchEffect } from 'vue'
+import { useEventListener } from '@vueuse/core'
 import { isClient } from '@vueuse/shared'
 import {
   AUTOFOCUS_ON_MOUNT,
@@ -122,15 +123,14 @@ watchEffect((cleanupFn) => {
       focus(container)
   }
 
-  document.addEventListener('focusin', handleFocusIn)
-  document.addEventListener('focusout', handleFocusOut)
+  useEventListener(document, 'focusin', handleFocusIn)
+  useEventListener(document, 'focusout', handleFocusOut)
+
   const mutationObserver = new MutationObserver(handleMutations)
   if (container)
     mutationObserver.observe(container, { childList: true, subtree: true })
 
   cleanupFn(() => {
-    document.removeEventListener('focusin', handleFocusIn)
-    document.removeEventListener('focusout', handleFocusOut)
     mutationObserver.disconnect()
   })
 })
@@ -168,7 +168,9 @@ watchEffect(async (cleanupFn) => {
     const unmountEventHandler = (ev: Event) => {
       emits('unmountAutoFocus', ev)
     }
-    container.addEventListener(AUTOFOCUS_ON_UNMOUNT, unmountEventHandler)
+
+    const stop = useEventListener(container, AUTOFOCUS_ON_UNMOUNT, unmountEventHandler)
+
     container.dispatchEvent(unmountEvent)
 
     setTimeout(() => {
@@ -176,7 +178,7 @@ watchEffect(async (cleanupFn) => {
         focus(previouslyFocusedElement ?? document.body, { select: true })
 
       // we need to remove the listener after we `dispatchEvent`
-      container.removeEventListener(AUTOFOCUS_ON_UNMOUNT, unmountEventHandler)
+      stop()
 
       focusScopesStack.remove(focusScope)
     }, 0)

@@ -1,5 +1,5 @@
-import { type MaybeElementRef, unrefElement } from '@vueuse/core'
-import { onMounted, onUnmounted } from 'vue'
+import { type MaybeElementRef, unrefElement, useEventListener } from '@vueuse/core'
+import { onMounted } from 'vue'
 
 export function onFocusOutside(
   element: MaybeElementRef,
@@ -17,12 +17,6 @@ export function onFocusOutside(
 
   onMounted(() => {
     const el = unrefElement(element)
-    // @ts-expect-error focusout should received FocusEvent
-    el?.addEventListener('focusout', handleFocusOut)
-  })
-  onUnmounted(() => {
-    const el = unrefElement(element)
-    // @ts-expect-error focusout should received FocusEvent
-    el?.removeEventListener('focusout', handleFocusOut)
+    useEventListener(el, 'focusout', handleFocusOut)
   })
 }

@@ -7,6 +7,7 @@ export interface SelectScrollDownButtonProps extends PrimitiveProps {}
 
 <script setup lang="ts">
 import { ref, watch, watchEffect } from 'vue'
+import { useEventListener } from '@vueuse/core'
 import { SelectContentDefaultContextValue, injectSelectContentContext } from './SelectContentImpl.vue'
 import SelectScrollButtonImpl from './SelectScrollButtonImpl.vue'
 import { injectSelectItemAlignedPositionContext } from './SelectItemAlignedPosition.vue'
@@ -23,7 +24,7 @@ const { forwardRef, currentElement } = useForwardExpose()
 
 const canScrollDown = ref(false)
 
-watchEffect((cleanupFn) => {
+watchEffect(() => {
   if (contentContext.viewport?.value && contentContext.isPositioned?.value) {
     const viewport = contentContext.viewport.value
 
@@ -34,9 +35,8 @@ watchEffect((cleanupFn) => {
       canScrollDown.value = Math.ceil(viewport.scrollTop) < maxScroll
     }
     handleScroll()
-    viewport.addEventListener('scroll', handleScroll)
 
-    cleanupFn(() => viewport.removeEventListener('scroll', handleScroll))
+    useEventListener(viewport, 'scroll', handleScroll)
   }
 })
 

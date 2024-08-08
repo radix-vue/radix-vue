@@ -85,7 +85,7 @@ import {
   watch,
   watchEffect,
 } from 'vue'
-import { unrefElement } from '@vueuse/core'
+import { unrefElement, useEventListener } from '@vueuse/core'
 import { injectSelectRootContext } from './SelectRoot.vue'
 import SelectItemAlignedPosition from './SelectItemAlignedPosition.vue'
 import SelectPopperPosition from './SelectPopperPosition.vue'
@@ -160,12 +160,12 @@ watchEffect((cleanupFn) => {
       if (!content.value?.contains(event.target as HTMLElement))
         onOpenChange(false)
     }
-    document.removeEventListener('pointermove', handlePointerMove)
+    useEventListener(document, 'pointermove', handlePointerMove)
     triggerPointerDownPosRef.value = null
   }
 
   if (triggerPointerDownPosRef.value !== null) {
-    document.addEventListener('pointermove', handlePointerMove)
+    useEventListener(document, 'pointermove', handlePointerMove)
     document.addEventListener('pointerup', handlePointerUp, {
       capture: true,
       once: true,
@@ -173,7 +173,6 @@ watchEffect((cleanupFn) => {
   }
 
   cleanupFn(() => {
-    document.removeEventListener('pointermove', handlePointerMove)
     document.removeEventListener('pointerup', handlePointerUp, {
       capture: true,
     })
