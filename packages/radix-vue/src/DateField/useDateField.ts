@@ -280,8 +280,10 @@ export function useDateField(props: UseDateFieldProps) {
       return prevValue
 
     const str = prevValue.toString()
-    if (str.length === 1)
+    if (str.length === 1) {
+      props.modelValue.value = undefined
       return null
+    }
 
     return Number.parseInt(str.slice(0, -1))
   }
@@ -813,7 +815,7 @@ export function useDateField(props: UseDateFieldProps) {
 
     segmentKeydownHandlers[props.part as keyof typeof segmentKeydownHandlers](e)
 
-    if (!isSegmentNavigationKey(e.key) && e.key !== kbd.TAB && e.key !== kbd.SHIFT && isAcceptableSegmentKey(e.key)) {
+    if (![kbd.ARROW_LEFT, kbd.ARROW_RIGHT].includes(e.key) && e.key !== kbd.TAB && e.key !== kbd.SHIFT && isAcceptableSegmentKey(e.key)) {
       if (Object.values(props.segmentValues.value).every(item => item !== null)) {
         const updateObject = { ...props.segmentValues.value as Record<AnyExceptLiteral, number> }
 

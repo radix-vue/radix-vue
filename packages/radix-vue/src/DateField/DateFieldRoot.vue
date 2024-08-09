@@ -123,7 +123,6 @@ onMounted(() => {
 
 const modelValue = useVModel(props, 'modelValue', emits, {
   defaultValue: defaultValue.value,
-  passive: (props.modelValue === undefined) as false,
 }) as Ref<DateValue>
 
 const defaultDate = getDefaultDate({
@@ -196,10 +195,12 @@ watch(modelValue, (_modelValue) => {
 })
 
 watch([modelValue, locale], ([_modelValue]) => {
-  if (_modelValue !== undefined)
+  if (_modelValue !== undefined) {
     segmentValues.value = { ...syncSegmentValues({ value: _modelValue, formatter }) }
-  else
+  }
+  else if (Object.values(segmentValues.value).every(value => value === null)) {
     segmentValues.value = { ...initialSegments }
+  }
 })
 
 const currentFocusedElement = ref<HTMLElement | null>(null)

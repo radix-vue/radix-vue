@@ -41,7 +41,7 @@ export function initializeSegmentValues(granularity: Granularity): SegmentValueO
     if (key === 'literal' || key === null)
       return false
     if (granularity === 'day')
-      return !calendarDateTimeGranularities.includes(key)
+      return !calendarDateTimeGranularities.includes(key) && key !== 'dayPeriod'
     else return true
   })
 

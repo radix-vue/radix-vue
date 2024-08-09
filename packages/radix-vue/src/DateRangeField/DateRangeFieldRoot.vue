@@ -121,7 +121,6 @@ onMounted(() => {
 
 const modelValue = useVModel(props, 'modelValue', emits, {
   defaultValue: props.defaultValue ?? { start: undefined, end: undefined },
-  passive: (props.modelValue === undefined) as false,
 }) as Ref<DateRange>
 
 const defaultDate = getDefaultDate({
@@ -233,18 +232,7 @@ const startValue = ref(modelValue.value.start?.copy()) as Ref<DateValue | undefi
 const endValue = ref(modelValue.value.end?.copy()) as Ref<DateValue | undefined>
 
 watch([startValue, endValue], ([_startValue, _endValue]) => {
-  const value = modelValue.value
-  if (value.start && value.end && _startValue && _endValue && value.start.compare(_startValue) === 0 && value.end.compare(_endValue) === 0)
-    return
-
-  if (_startValue && _endValue) {
-    if (modelValue.value.start?.compare(_startValue) === 0 && modelValue.value.end?.compare(_endValue) === 0)
-      return
-    modelValue.value = { start: _startValue.copy(), end: _endValue.copy() }
-  }
-  else if (modelValue.value.start && modelValue.value.end) {
-    modelValue.value = { start: undefined, end: undefined }
-  }
+  modelValue.value = { start: _startValue?.copy(), end: _endValue?.copy() }
 })
 
 watch(modelValue, (_modelValue) => {
@@ -257,10 +245,12 @@ watch(modelValue, (_modelValue) => {
 })
 
 watch([startValue, locale], ([_startValue]) => {
-  if (_startValue !== undefined)
+  if (_startValue !== undefined) {
     startSegmentValues.value = { ...syncSegmentValues({ value: _startValue, formatter }) }
-  else
+  }
+  else if (Object.values(startSegmentValues.value).every(value => value === null)) {
     startSegmentValues.value = { ...initialSegments }
+  }
 })
 
 watch(locale, (value) => {
@@ -281,10 +271,12 @@ watch(modelValue, (_modelValue) => {
 })
 
 watch([endValue, locale], ([_endValue]) => {
-  if (_endValue !== undefined)
+  if (_endValue !== undefined) {
     endSegmentValues.value = { ...syncSegmentValues({ value: _endValue, formatter }) }
-  else
+  }
+  else if (Object.values(endSegmentValues.value).every(value => value === null)) {
     endSegmentValues.value = { ...initialSegments }
+  }
 })
 
 const currentFocusedElement = ref<HTMLElement | null>(null)
