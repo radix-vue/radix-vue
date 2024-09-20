@@ -34,9 +34,9 @@ type ComboboxRootContext<T> = {
 export const [injectComboboxRootContext, provideComboboxRootContext]
   = createContext<ComboboxRootContext<AcceptableValue>>('ComboboxRoot')
 
-export type ComboboxRootEmits<T = AcceptableValue> = {
+export type ComboboxRootEmits<T = AcceptableValue, TMultiple = boolean> = {
   /** Event handler called when the value changes. */
-  'update:modelValue': [value: T]
+  'update:modelValue': [value: TMultiple extends true ? Array<T> : T]
   /** Event handler called when the open state of the combobox changes. */
   'update:open': [value: boolean]
   /** Event handler called when the searchTerm of the combobox changes. */
@@ -45,11 +45,11 @@ export type ComboboxRootEmits<T = AcceptableValue> = {
   'update:selectedValue': [value: T | undefined]
 }
 
-export interface ComboboxRootProps<T = AcceptableValue> extends PrimitiveProps {
+export interface ComboboxRootProps<T = AcceptableValue, TMultiple = boolean> extends PrimitiveProps {
   /** The controlled value of the Combobox. Can be binded-with with `v-model`. */
-  modelValue?: T | Array<T>
+  modelValue?: TMultiple extends true ? Array<T> : T
   /** The value of the combobox when initially rendered. Use when you do not need to control the state of the Combobox */
-  defaultValue?: T | Array<T>
+  defaultValue?: TMultiple extends true ? Array<T> : T
   /** The controlled open state of the Combobox. Can be binded-with with `v-model:open`. */
   open?: boolean
   /** The open state of the combobox when it is initially rendered. <br> Use when you do not need to control its open state. */
@@ -59,7 +59,7 @@ export interface ComboboxRootProps<T = AcceptableValue> extends PrimitiveProps {
   /** The current highlighted value of the COmbobox. Can be binded-with `v-model:selectedValue`. */
   selectedValue?: T
   /** Whether multiple options can be selected or not. */
-  multiple?: boolean
+  multiple?: TMultiple
   /** When `true`, prevents the user from interacting with Combobox */
   disabled?: boolean
   /** The name of the Combobox. Submitted with its owning form as part of a name/value pair. */
@@ -78,7 +78,7 @@ export interface ComboboxRootProps<T = AcceptableValue> extends PrimitiveProps {
 }
 </script>
 
-<script setup lang="ts" generic="T extends AcceptableValue = AcceptableValue">
+<script setup lang="ts" generic="T extends AcceptableValue = AcceptableValue, TMultiple = boolean">
 import { computed, nextTick, ref, toRefs, watch } from 'vue'
 import { PopperRoot } from '@/Popper'
 import { Primitive } from '@/Primitive'
@@ -86,18 +86,18 @@ import { useVModel } from '@vueuse/core'
 import { VisuallyHiddenInput } from '@/VisuallyHidden'
 import isEqual from 'fast-deep-equal'
 
-const props = withDefaults(defineProps<ComboboxRootProps<T>>(), {
+const props = withDefaults(defineProps<ComboboxRootProps<T, TMultiple>>(), {
   open: undefined,
   resetSearchTermOnBlur: true,
 })
-const emit = defineEmits<ComboboxRootEmits<T>>()
+const emit = defineEmits<ComboboxRootEmits<T, TMultiple>>()
 
 defineSlots<{
   default: (props: {
     /** Current open state */
     open: typeof open.value
     /** Current active value */
-    modelValue: typeof modelValue.value
+    modelValue: TMultiple extends true ? Array<T> : T
   }) => any
 }>()
 
@@ -115,7 +115,7 @@ const modelValue = useVModel(props, 'modelValue', emit, {
   defaultValue: props.defaultValue ?? multiple.value ? [] : undefined,
   passive: (props.modelValue === undefined) as false,
   deep: true,
-}) as Ref<T | T[]>
+}) as Ref<TMultiple extends true ? T[] : T>
 
 const open = useVModel(props, 'open', emit, {
   defaultValue: props.defaultOpen,
