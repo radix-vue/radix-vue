@@ -55,6 +55,12 @@ function handleKeyDown(ev: KeyboardEvent) {
 }
 
 function handleHomeEnd(ev: KeyboardEvent) {
+  // allow text selection while maintaining `shift` key
+  if(ev.shiftKey)
+    return
+
+  ev.preventDefault()
+
   if (!rootContext.open.value)
     return
   rootContext.onInputNavigation(ev.key === 'Home' ? 'home' : 'end')
@@ -87,7 +93,7 @@ function handleInput(event: Event) {
     @input="handleInput"
     @keydown.down.up.prevent="handleKeyDown"
     @keydown.enter="rootContext.onInputEnter"
-    @keydown.home.end.prevent="handleHomeEnd"
+    @keydown.home.end="handleHomeEnd"
   >
     <slot />
   </Primitive>

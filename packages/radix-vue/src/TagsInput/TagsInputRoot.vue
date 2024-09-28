@@ -172,6 +172,10 @@ provideTagsInputRootContext({
       case 'End':
       case 'ArrowRight':
       case 'ArrowLeft': {
+        // allow text selection while maintaining `shift` key
+        if(event.shiftKey)
+          break
+
         const isArrowRight = (event.key === 'ArrowRight' && dir.value === 'ltr') || (event.key === 'ArrowLeft' && dir.value === 'rtl')
         const isArrowLeft = !isArrowRight
         // only focus on tags when cursor is at the first position
