@@ -55,8 +55,8 @@ function handleKeyDown(ev: KeyboardEvent) {
 }
 
 function handleHomeEnd(ev: KeyboardEvent) {
-  // allow text selection while maintaining `shift` key
-  if(ev.shiftKey)
+  // allow default input behavior when element has a value
+  if(ev.target.value?.length > 0)
     return
 
   ev.preventDefault()

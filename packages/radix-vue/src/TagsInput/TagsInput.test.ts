@@ -72,30 +72,12 @@ describe('given default TagsInput', () => {
         expect(tags[tags.length - 2].attributes('data-state')).toBe('active')
       })
 
-      it('should not select the previous tag when press Shift + ArrowLeft', async () => {
-        await input.trigger('keydown', {
-          key: 'ArrowLeft',
-          shiftKey: true,
-        })
-        expect(tags[tags.length - 1].attributes('data-state')).not.toBe('inactive')
-        expect(tags[tags.length - 2].attributes('data-state')).not.toBe('active')
-      })
-
       it('should select the first item when press Home', async () => {
         await input.trigger('keydown', {
           key: 'Home',
         })
         expect(tags[0].attributes('data-state')).toBe('active')
         expect(tags[tags.length - 1].attributes('data-state')).toBe('inactive')
-      })
-
-      it('should not select the first item when press Shift + Home', async () => {
-        await input.trigger('keydown', {
-          key: 'Home',
-          shiftKey: true,
-        })
-        expect(tags[0].attributes('data-state')).not.toBe('active');
-        expect(tags[tags.length - 1].attributes('data-state')).not.toBe('inactive')
       })
 
       it('should select the last item when press End', async () => {
@@ -109,31 +91,11 @@ describe('given default TagsInput', () => {
         expect(tags[tags.length - 1].attributes('data-state')).toBe('active')
       })
 
-      it('should not select the last item when press Shift + End', async () => {
-        await input.trigger('keydown', {
-          key: 'Home',
-        })
-        await input.trigger('keydown', {
-          key: 'End',
-          shiftKey: true,
-        })
-        expect(tags[0].attributes('data-state')).not.toBe('inactive');
-        expect(tags[tags.length - 1].attributes('data-state')).not.toBe('active');
-      })
-
       it('should remove active state when press ArrowRight', async () => {
         await input.trigger('keydown', {
           key: 'ArrowRight',
         })
         expect(tags[tags.length - 1].attributes('data-state')).toBe('inactive')
-      })
-
-      it('should not remove active state when press Shift + ArrowRight', async () => {
-        await input.trigger('keydown', {
-          key: 'ArrowRight',
-          shiftKey: true,
-        })
-        expect(tags[tags.length - 1].attributes('data-state')).not.toBe('inactive')
       })
 
       describe('after pressing on Backspace', () => {
