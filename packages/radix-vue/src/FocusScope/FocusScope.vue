@@ -137,12 +137,11 @@ watchEffect((cleanupFn) => {
 
 watchEffect(async (cleanupFn) => {
   const container = currentElement.value
-
+  const previouslyFocusedElement = document.activeElement as HTMLElement | null
   await nextTick()
   if (!container)
     return
   focusScopesStack.add(focusScope)
-  const previouslyFocusedElement = document.activeElement as HTMLElement | null
   const hasFocusedCandidate = container.contains(previouslyFocusedElement)
 
   if (!hasFocusedCandidate) {
