@@ -29,7 +29,7 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
-      "require": "./dist/index.umd.cjs"
+      "require": "./dist/index.cjs"
     },
     "./date": {
       "import": {
@@ -38,7 +38,7 @@
       },
       "require": {
         "types": "./dist/date/index.d.ts",
-        "default": "./dist/date.umd.cjs"
+        "default": "./dist/date.cjs"
       }
     },
     "./namespaced": {
@@ -72,7 +72,7 @@
       }
     }
   },
-  "main": "./dist/index.umd.cjs",
+  "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "typings": "./dist/index.d.ts",
@@ -82,7 +82,9 @@
   ],
   "scripts": {
     "build": "pnpm type-check && pnpm build-only",
-    "build-only": "vite build",
+    "build-only": "pnpm run build-only-esm && pnpm run build-only-cjs",
+    "build-only-esm": "vite build",
+    "build-only-cjs": "vite build --config vite.config.cjs.ts",
     "watch": "vite build --watch",
     "type-check": "vue-tsc -p tsconfig.check.json --noEmit",
     "type-gen": "vue-tsc --declaration  --emitDeclarationOnly",
