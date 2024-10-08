@@ -75,6 +75,11 @@ export interface ComboboxRootProps<T = AcceptableValue> extends PrimitiveProps {
    * @defaultValue `true`
    */
   resetSearchTermOnBlur?: boolean
+  /**
+   * Whether to reset the searchTerm when the Combobox value is selected
+   * @defaultValue `true`
+   */
+  resetSearchTermOnSelect?: boolean
 }
 </script>
 
@@ -89,6 +94,7 @@ import isEqual from 'fast-deep-equal'
 const props = withDefaults(defineProps<ComboboxRootProps<T>>(), {
   open: undefined,
   resetSearchTermOnBlur: true,
+  resetSearchTermOnSelect: true,
 })
 const emit = defineEmits<ComboboxRootEmits<T>>()
 
@@ -146,7 +152,7 @@ async function onOpenChange(val: boolean) {
   else {
     isUserInputted.value = false
     if (props.resetSearchTermOnBlur)
-      resetSearchTerm()
+      resetSearchTerm('blur')
   }
 }
 
@@ -192,16 +198,19 @@ const filteredOptions = computed(() => {
   return options.value
 })
 
-function resetSearchTerm() {
+function resetSearchTerm(mode?: 'blur' | 'select') {
+  // clear when blur or when select and resetSearchTermOnSelect is true
+  const condition = mode === 'blur' || (mode === 'select' && props.resetSearchTermOnSelect)
+
   if (!multiple.value && modelValue.value && !Array.isArray(modelValue.value)) {
     if (props.displayValue)
       searchTerm.value = props.displayValue(modelValue.value)
     else if (typeof modelValue.value !== 'object')
       searchTerm.value = modelValue.value.toString()
-    else
+    else if (condition)
       searchTerm.value = ''
   }
-  else {
+  else if (condition) {
     searchTerm.value = ''
   }
 }
@@ -217,7 +226,7 @@ const stringifiedModelValue = computed(() => JSON.stringify(modelValue.value))
 watch(stringifiedModelValue, async () => {
   await nextTick()
   await nextTick()
-  resetSearchTerm()
+  resetSearchTerm('select')
 }, {
   // If searchTerm is provided with value during initialization, we don't reset it immediately
   immediate: !props.searchTerm,

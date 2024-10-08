@@ -50,9 +50,7 @@ export const [injectMenuRootContext, provideMenuRootContext]
 import {
   ref,
   toRefs,
-  watchEffect,
 } from 'vue'
-import { isClient } from '@vueuse/shared'
 import { useVModel } from '@vueuse/core'
 import { PopperRoot } from '@/Popper'
 

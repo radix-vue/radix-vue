@@ -82,6 +82,13 @@
     'default': 'true'
   },
   {
+    'name': 'resetSearchTermOnSelect',
+    'description': '<p>Whether to reset the searchTerm when the Combobox value is selected</p>\n',
+    'type': 'boolean',
+    'required': false,
+    'default': 'true'
+  },
+  {
     'name': 'searchTerm',
     'description': '<p>The controlled search term of the Combobox. Can be binded-with with v-model:searchTerm.</p>\n',
     'type': 'string',

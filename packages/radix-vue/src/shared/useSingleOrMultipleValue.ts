@@ -21,7 +21,7 @@ function validateProps({ type, defaultValue, modelValue }: SingleOrMultipleProps
 
   if (modelValue !== undefined && defaultValue !== undefined && typeof modelValue !== typeof defaultValue) {
     throw new Error(
-        `Invalid prop \`value\` of value \`${modelValue}\` supplied, should be the same type as the \`defaultValue\` prop, which is \`${defaultValue}\`. The \`value\` prop must be:
+      `Invalid prop \`value\` of value \`${modelValue}\` supplied, should be the same type as the \`defaultValue\` prop, which is \`${defaultValue}\`. The \`value\` prop must be:
   ${type === 'single' ? '- a string' : type === 'multiple' ? '- an array of strings' : '- a string\n- an array of strings'}
   - \`undefined\``,
     )

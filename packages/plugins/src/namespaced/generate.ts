@@ -21,10 +21,10 @@ const namespaced = filteredComponent.map((curr: keyof typeof components) => {
   }
   else {
     return `export const ${key} = {\n${
-        Object.keys(tmp).map((k) => { return `  ${k}: ${tmp[k]},\n` }).join('')
+      Object.keys(tmp).map((k) => { return `  ${k}: ${tmp[k]},\n` }).join('')
     }}  as {\n${Object.keys(tmp).map((k) => {
-        return `  ${k}: typeof ${tmp[k]}\n`
-     }).join('')}}`
+      return `  ${k}: typeof ${tmp[k]}\n`
+    }).join('')}}`
   }
 })
 

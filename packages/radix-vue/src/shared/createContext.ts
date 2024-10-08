@@ -40,8 +40,8 @@ export function createContext<ContextValue>(
       `Injection \`${injectionKey.toString()}\` not found. Component must be used within ${
         Array.isArray(providerComponentName)
           ? `one of the following components: ${providerComponentName.join(
-              ', ',
-            )}`
+            ', ',
+          )}`
           : `\`${providerComponentName}\``
       }`,
     )

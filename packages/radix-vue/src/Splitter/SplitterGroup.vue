@@ -522,7 +522,7 @@ function collapsePanel(panelData: PanelData) {
 
     assert(
       panelSize != null,
-        `Panel size not found for panel "${panelData.id}"`,
+      `Panel size not found for panel "${panelData.id}"`,
     )
 
     if (panelSize !== collapsedSize) {
@@ -625,7 +625,7 @@ function getPanelSize(panelData: PanelData) {
 
   assert(
     panelSize != null,
-      `Panel size not found for panel "${panelData.id}"`,
+    `Panel size not found for panel "${panelData.id}"`,
   )
 
   return panelSize
@@ -654,7 +654,7 @@ function isPanelExpanded(panelData: PanelData) {
 
   assert(
     panelSize != null,
-      `Panel size not found for panel "${panelData.id}"`,
+    `Panel size not found for panel "${panelData.id}"`,
   )
 
   return !collapsible || panelSize > collapsedSize
