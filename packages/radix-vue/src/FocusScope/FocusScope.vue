@@ -35,6 +35,7 @@ export interface FocusScopeProps extends PrimitiveProps {
 
 <script setup lang="ts">
 import { nextTick, reactive, ref, watchEffect } from 'vue'
+import { useEventListener } from '@vueuse/core'
 import { isClient } from '@vueuse/shared'
 import {
   AUTOFOCUS_ON_MOUNT,
@@ -68,7 +69,7 @@ const focusScope = reactive({
   },
 })
 
-watchEffect((cleanupFn) => {
+watchEffect((onCleanup) => {
   if (!isClient)
     return
   const container = currentElement.value
@@ -122,20 +123,21 @@ watchEffect((cleanupFn) => {
       focus(container)
   }
 
-  document.addEventListener('focusin', handleFocusIn)
-  document.addEventListener('focusout', handleFocusOut)
+  const documentFocusInCleanup = useEventListener(document, 'focusin', handleFocusIn)
+  const documentFocusOutCleanup = useEventListener(document, 'focusout', handleFocusOut)
+
   const mutationObserver = new MutationObserver(handleMutations)
   if (container)
     mutationObserver.observe(container, { childList: true, subtree: true })
 
-  cleanupFn(() => {
-    document.removeEventListener('focusin', handleFocusIn)
-    document.removeEventListener('focusout', handleFocusOut)
+  onCleanup(() => {
+    documentFocusInCleanup()
+    documentFocusOutCleanup()
     mutationObserver.disconnect()
   })
 })
 
-watchEffect(async (cleanupFn) => {
+watchEffect(async (onCleanup) => {
   const container = currentElement.value
 
   await nextTick()
@@ -160,7 +162,7 @@ watchEffect(async (cleanupFn) => {
     }
   }
 
-  cleanupFn(() => {
+  onCleanup(() => {
     container.removeEventListener(AUTOFOCUS_ON_MOUNT, (ev: Event) =>
       emits('mountAutoFocus', ev))
 
@@ -168,7 +170,9 @@ watchEffect(async (cleanupFn) => {
     const unmountEventHandler = (ev: Event) => {
       emits('unmountAutoFocus', ev)
     }
-    container.addEventListener(AUTOFOCUS_ON_UNMOUNT, unmountEventHandler)
+
+    const stop = useEventListener(container, AUTOFOCUS_ON_UNMOUNT, unmountEventHandler)
+
     container.dispatchEvent(unmountEvent)
 
     setTimeout(() => {
@@ -176,7 +180,7 @@ watchEffect(async (cleanupFn) => {
         focus(previouslyFocusedElement ?? document.body, { select: true })
 
       // we need to remove the listener after we `dispatchEvent`
-      container.removeEventListener(AUTOFOCUS_ON_UNMOUNT, unmountEventHandler)
+      stop()
 
       focusScopesStack.remove(focusScope)
     }, 0)

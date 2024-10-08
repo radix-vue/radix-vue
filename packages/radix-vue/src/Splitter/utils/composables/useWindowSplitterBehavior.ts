@@ -2,6 +2,7 @@ import { type Ref, watchEffect } from 'vue'
 import type { ResizeHandler } from '../types'
 import { assert } from '../assert'
 import { getResizeHandleElement, getResizeHandleElementIndex, getResizeHandleElementsForGroup } from '../dom'
+import { useEventListener } from '@vueuse/core'
 
 // https://www.w3.org/WAI/ARIA/apg/patterns/windowsplitter/
 
@@ -75,9 +76,10 @@ export function useWindowSplitterResizeHandlerBehavior({
       }
     }
 
-    handleElement.addEventListener('keydown', onKeyDown)
+    const handleElementKeydownCleanup = useEventListener(handleElement, 'keydown', onKeyDown)
+
     onCleanup(() => {
-      handleElement.removeEventListener('keydown', onKeyDown)
+      handleElementKeydownCleanup()
     })
   })
 }

@@ -1,6 +1,7 @@
 <script lang="ts">
 import type { PrimitiveProps } from '@/Primitive'
 import { useForwardExpose, useId } from '@/shared'
+import { useEventListener } from '@vueuse/core'
 
 export type TooltipTriggerDataState =
   | 'closed'
@@ -58,7 +59,7 @@ function handlePointerUp() {
 
 function handlePointerDown() {
   isPointerDown.value = true
-  document.addEventListener('pointerup', handlePointerUp, { once: true })
+  useEventListener(document, 'pointerup', handlePointerUp, { once: true })
 }
 
 function handlePointerMove(event: PointerEvent) {

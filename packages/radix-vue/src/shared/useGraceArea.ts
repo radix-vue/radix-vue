@@ -1,9 +1,10 @@
 import { type Ref, ref, watchEffect } from 'vue'
 import type { Side } from '@/Popper/utils'
 import { createEventHook, refAutoReset } from '@vueuse/shared'
+import { useEventListener } from '@vueuse/core'
 
 export function useGraceArea(triggerElement: Ref<HTMLElement | undefined>, containerElement: Ref<HTMLElement | undefined>) {
-// Reset the inTransit state if idle/scrolled.
+  // Reset the inTransit state if idle/scrolled.
   const isPointerInTransit = refAutoReset(false, 300)
 
   const pointerGraceArea = ref<Polygon | null>(null)
@@ -25,22 +26,22 @@ export function useGraceArea(triggerElement: Ref<HTMLElement | undefined>, conta
     isPointerInTransit.value = true
   }
 
-  watchEffect((cleanupFn) => {
+  watchEffect((onCleanup) => {
     if (triggerElement.value && containerElement.value) {
       const handleTriggerLeave = (event: PointerEvent) => handleCreateGraceArea(event, containerElement.value!)
       const handleContentLeave = (event: PointerEvent) => handleCreateGraceArea(event, triggerElement.value!)
 
-      triggerElement.value.addEventListener('pointerleave', handleTriggerLeave)
-      containerElement.value.addEventListener('pointerleave', handleContentLeave)
+      const triggerElementPointerLeaveCleanup = useEventListener(triggerElement, 'pointerleave', handleTriggerLeave)
+      const triggerElementPointerLeaveContentCleanup = useEventListener(containerElement, 'pointerleave', handleContentLeave)
 
-      cleanupFn(() => {
-        triggerElement.value?.removeEventListener('pointerleave', handleTriggerLeave)
-        containerElement.value?.removeEventListener('pointerleave', handleContentLeave)
+      onCleanup(() => {
+        triggerElementPointerLeaveCleanup()
+        triggerElementPointerLeaveContentCleanup()
       })
     }
   })
 
-  watchEffect((cleanupFn) => {
+  watchEffect((onCleanup) => {
     if (pointerGraceArea.value) {
       const handleTrackPointerGrace = (event: PointerEvent) => {
         if (!pointerGraceArea.value)
@@ -59,9 +60,12 @@ export function useGraceArea(triggerElement: Ref<HTMLElement | undefined>, conta
           pointerExit.trigger()
         }
       }
-      triggerElement.value?.ownerDocument.addEventListener('pointermove', handleTrackPointerGrace)
 
-      cleanupFn(() => triggerElement.value?.ownerDocument.removeEventListener('pointermove', handleTrackPointerGrace))
+      const documentPointermoveCleanup = useEventListener(triggerElement.value?.ownerDocument, 'pointermove', handleTrackPointerGrace)
+
+      onCleanup(() => {
+        documentPointermoveCleanup()
+      })
     }
   })
 
@@ -211,11 +215,9 @@ function getHullPresorted<P extends Point>(points: Readonly<Array<P>>): Array<P>
     && lowerHull.length === 1
     && upperHull[0].x === lowerHull[0].x
     && upperHull[0].y === lowerHull[0].y
-  ) {
+  )
     return upperHull
-  }
 
-  else {
+  else
     return upperHull.concat(lowerHull)
-  }
 }

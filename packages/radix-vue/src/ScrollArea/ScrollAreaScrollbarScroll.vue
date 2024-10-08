@@ -6,7 +6,7 @@ export interface ScrollAreaScrollbarScrollProps {
 
 <script setup lang="ts">
 import { watchEffect } from 'vue'
-import { useDebounceFn } from '@vueuse/core'
+import { useDebounceFn, useEventListener } from '@vueuse/core'
 import { useStateMachine } from '../shared/useStateMachine'
 import { injectScrollAreaRootContext } from './ScrollAreaRoot.vue'
 import { injectScrollAreaScrollbarContext } from './ScrollAreaScrollbar.vue'
@@ -72,10 +72,11 @@ watchEffect((onCleanup) => {
       }
       prevScrollPos = scrollPos
     }
-    viewport.addEventListener('scroll', handleScroll)
+
+    const viewportScrollCleanup = useEventListener(viewport, 'scroll', handleScroll)
 
     onCleanup(() => {
-      viewport.removeEventListener('scroll', handleScroll)
+      viewportScrollCleanup()
     })
   }
 })

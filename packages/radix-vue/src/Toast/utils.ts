@@ -1,3 +1,5 @@
+import { useEventListener } from '@vueuse/core'
+
 export const TOAST_SWIPE_START = 'toast.swipeStart'
 export const TOAST_SWIPE_MOVE = 'toast.swipeMove'
 export const TOAST_SWIPE_CANCEL = 'toast.swipeCancel'
@@ -32,7 +34,7 @@ export function handleAndDispatchCustomEvent<
     detail,
   })
   if (handler)
-    currentTarget.addEventListener(name, handler as EventListener, { once: true })
+    useEventListener(currentTarget, name, handler as EventListener, { once: true })
 
   currentTarget.dispatchEvent(event)
 }

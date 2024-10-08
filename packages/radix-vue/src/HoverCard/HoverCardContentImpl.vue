@@ -10,6 +10,7 @@ export interface HoverCardContentImplProps extends PopperContentProps {}
 
 <script setup lang="ts">
 import { nextTick, onMounted, onUnmounted, ref, watchEffect } from 'vue'
+import { useEventListener } from '@vueuse/core'
 import { injectHoverCardRootContext } from './HoverCardRoot.vue'
 import { PopperContent } from '@/Popper'
 import { DismissableLayer } from '@/DismissableLayer'
@@ -63,7 +64,7 @@ function handlePointerUp() {
 }
 onMounted(() => {
   if (contentElement.value) {
-    document.addEventListener('pointerup', handlePointerUp)
+    useEventListener(document, 'pointerup', handlePointerUp)
 
     const tabbables = getTabbableNodes(contentElement.value)
     tabbables.forEach(tabbable => tabbable.setAttribute('tabindex', '-1'))
@@ -71,7 +72,6 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
-  document.removeEventListener('pointerup', handlePointerUp)
   rootContext.hasSelectionRef.value = false
   rootContext.isPointerDownOnContentRef.value = false
 })

@@ -11,8 +11,8 @@ export interface ScrollAreaScrollbarImplProps {
 </script>
 
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref } from 'vue'
-import { useResizeObserver } from '@vueuse/core'
+import { onMounted, ref } from 'vue'
+import { useEventListener, useResizeObserver } from '@vueuse/core'
 import { injectScrollAreaRootContext } from './ScrollAreaRoot.vue'
 import { injectScrollAreaScrollbarVisibleContext } from './ScrollAreaScrollbarVisible.vue'
 import { injectScrollAreaScrollbarContext } from './ScrollAreaScrollbar.vue'
@@ -83,10 +83,7 @@ function handleWheel(event: WheelEvent) {
 }
 
 onMounted(() => {
-  document.addEventListener('wheel', handleWheel, { passive: false })
-})
-onUnmounted(() => {
-  document.removeEventListener('wheel', handleWheel)
+  useEventListener(document, 'wheel', handleWheel, { passive: false })
 })
 
 function handleSizeChange() {

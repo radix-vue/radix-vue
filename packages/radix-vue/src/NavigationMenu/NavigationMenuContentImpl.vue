@@ -15,6 +15,7 @@ export interface NavigationMenuContentImplProps extends DismissableLayerProps {}
 
 <script setup lang="ts">
 import { computed, ref, watchEffect } from 'vue'
+import { useEventListener } from '@vueuse/core'
 import { injectNavigationMenuContext } from './NavigationMenuRoot.vue'
 import {
   EVENT_ROOT_CONTENT_DISMISS,
@@ -107,7 +108,7 @@ function handlePointerDownOutside(ev: PointerDownOutsideEvent) {
   }
 }
 
-watchEffect((cleanupFn) => {
+watchEffect((onCleanup) => {
   const content = currentElement.value
   if (menuContext.isRootMenu && content) {
     // Bubble dismiss to the root content node and focus its trigger
@@ -117,11 +118,12 @@ watchEffect((cleanupFn) => {
       if (content.contains(document.activeElement))
         itemContext.triggerRef.value?.focus()
     }
-    content.addEventListener(EVENT_ROOT_CONTENT_DISMISS, handleClose)
 
-    cleanupFn(() =>
-      content.removeEventListener(EVENT_ROOT_CONTENT_DISMISS, handleClose),
-    )
+    const documentDismissCleanup = useEventListener(document, EVENT_ROOT_CONTENT_DISMISS, handleClose)
+
+    onCleanup(() => {
+      documentDismissCleanup()
+    })
   }
 })
 

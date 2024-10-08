@@ -85,7 +85,7 @@ import {
   watch,
   watchEffect,
 } from 'vue'
-import { unrefElement } from '@vueuse/core'
+import { unrefElement, useEventListener } from '@vueuse/core'
 import { injectSelectRootContext } from './SelectRoot.vue'
 import SelectItemAlignedPosition from './SelectItemAlignedPosition.vue'
 import SelectPopperPosition from './SelectPopperPosition.vue'
@@ -130,7 +130,10 @@ watch(isPositioned, () => {
 // prevent selecting items on `pointerup` in some cases after opening from `pointerdown`
 // and close on `pointerup` outside.
 const { onOpenChange, triggerPointerDownPosRef } = rootContext
-watchEffect((cleanupFn) => {
+
+let documentPointermoveCleanup: ReturnType<typeof useEventListener>
+
+watchEffect((onCleanup) => {
   if (!content.value)
     return
   let pointerMoveDelta = { x: 0, y: 0 }
@@ -160,20 +163,20 @@ watchEffect((cleanupFn) => {
       if (!content.value?.contains(event.target as HTMLElement))
         onOpenChange(false)
     }
-    document.removeEventListener('pointermove', handlePointerMove)
+    documentPointermoveCleanup = useEventListener(document, 'pointermove', handlePointerMove)
     triggerPointerDownPosRef.value = null
   }
 
   if (triggerPointerDownPosRef.value !== null) {
-    document.addEventListener('pointermove', handlePointerMove)
+    documentPointermoveCleanup = useEventListener(document, 'pointermove', handlePointerMove)
     document.addEventListener('pointerup', handlePointerUp, {
       capture: true,
       once: true,
     })
   }
 
-  cleanupFn(() => {
-    document.removeEventListener('pointermove', handlePointerMove)
+  onCleanup(() => {
+    documentPointermoveCleanup && documentPointermoveCleanup()
     document.removeEventListener('pointerup', handlePointerUp, {
       capture: true,
     })

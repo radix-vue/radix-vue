@@ -6,6 +6,7 @@ import { calculateAriaValues } from '../calculate'
 import { determinePivotIndices } from '../pivot'
 import { getPanelGroupElement, getResizeHandleElementsForGroup, getResizeHandlePanelIds } from '../dom'
 import { fuzzyNumbersEqual } from '../compare'
+import { useEventListener } from '@vueuse/core'
 
 // https://www.w3.org/WAI/ARIA/apg/patterns/windowsplitter/
 
@@ -154,9 +155,10 @@ export function useWindowSplitterPanelGroupBehavior({
         }
       }
 
-      handle.addEventListener('keydown', onKeyDown)
+      const handleKeydownCleanup = useEventListener(handle, 'keydown', onKeyDown)
+
       return () => {
-        handle.removeEventListener('keydown', onKeyDown)
+        handleKeydownCleanup()
       }
     })
 

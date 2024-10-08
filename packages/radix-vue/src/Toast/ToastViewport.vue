@@ -22,7 +22,7 @@ export interface ToastViewportProps extends PrimitiveProps {
 import { computed, onMounted, ref, toRefs, watchEffect } from 'vue'
 import { Primitive } from '@/Primitive'
 import { injectToastProviderContext } from './ToastProvider.vue'
-import { onKeyStroke, unrefElement } from '@vueuse/core'
+import { onKeyStroke, unrefElement, useEventListener } from '@vueuse/core'
 import FocusProxy from './FocusProxy.vue'
 import { focusFirst, getTabbableCandidates } from '@/FocusScope/utils'
 import { useCollection, useForwardExpose } from '@/shared'
@@ -58,7 +58,7 @@ onMounted(() => {
   providerContext.onViewportChange(currentElement.value)
 })
 
-watchEffect((cleanupFn) => {
+watchEffect((onCleanup) => {
   const viewport = currentElement.value
   if (hasToasts.value && viewport) {
     const handlePause = () => {
@@ -125,22 +125,20 @@ watchEffect((cleanupFn) => {
       }
     }
 
-    viewport.addEventListener('focusin', handlePause)
-    viewport.addEventListener('focusout', handleFocusOutResume)
-    viewport.addEventListener('pointermove', handlePause)
-    viewport.addEventListener('pointerleave', handlePointerLeaveResume)
-    viewport.addEventListener('keydown', handleKeyDown)
-    window.addEventListener('blur', handlePause)
-    window.addEventListener('focus', handleResume)
+    const viewportEventsCleanup = useEventListener(viewport, ['focusin', 'pointermove'], handlePause)
+    const viewportFocusoutCleanup = useEventListener(viewport, 'focusout', handleFocusOutResume)
+    const viewportPointerLeaveCleanup = useEventListener(viewport, 'pointerleave', handlePointerLeaveResume)
+    const viewportKeydownCleanup = useEventListener(viewport, 'keydown', handleKeyDown)
+    const windowBlurCleanup = useEventListener(window, 'blur', handlePause)
+    const windowFocusCleanup = useEventListener(window, 'focus', handleResume)
 
-    cleanupFn(() => {
-      viewport.removeEventListener('focusin', handlePause)
-      viewport.removeEventListener('focusout', handleFocusOutResume)
-      viewport.removeEventListener('pointermove', handlePause)
-      viewport.removeEventListener('pointerleave', handlePointerLeaveResume)
-      viewport.removeEventListener('keydown', handleKeyDown)
-      window.removeEventListener('blur', handlePause)
-      window.removeEventListener('focus', handleResume)
+    onCleanup(() => {
+      viewportEventsCleanup()
+      viewportFocusoutCleanup()
+      viewportPointerLeaveCleanup()
+      viewportKeydownCleanup()
+      windowBlurCleanup()
+      windowFocusCleanup()
     })
   }
 })

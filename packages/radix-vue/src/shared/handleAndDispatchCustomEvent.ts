@@ -1,3 +1,5 @@
+import { useEventListener } from '@vueuse/core'
+
 export function handleAndDispatchCustomEvent<
   E extends CustomEvent,
   OriginalEvent extends Event,
@@ -15,7 +17,7 @@ export function handleAndDispatchCustomEvent<
     detail,
   })
   if (handler)
-    target.addEventListener(name, handler as EventListener, { once: true })
+    useEventListener(target, handler as EventListener, { once: true })
 
   target.dispatchEvent(event)
 }

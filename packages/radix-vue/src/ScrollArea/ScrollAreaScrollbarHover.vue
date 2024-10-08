@@ -6,6 +6,7 @@ export interface ScrollAreaScrollbarHoverProps extends ScrollAreaScrollbarAutoPr
 
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref } from 'vue'
+import { useEventListener } from '@vueuse/core'
 import { injectScrollAreaRootContext } from './ScrollAreaRoot.vue'
 import ScrollAreaScrollbarAuto from './ScrollAreaScrollbarAuto.vue'
 import { Presence } from '@/Presence'
@@ -38,18 +39,15 @@ onMounted(() => {
   const scrollArea = rootContext.scrollArea.value
 
   if (scrollArea) {
-    scrollArea.addEventListener('pointerenter', handlePointerEnter)
-    scrollArea.addEventListener('pointerleave', handlePointerLeave)
+    useEventListener(scrollArea, 'pointerenter', handlePointerEnter)
+    useEventListener(scrollArea, 'pointerleave', handlePointerLeave)
   }
 })
 
 onUnmounted(() => {
   const scrollArea = rootContext.scrollArea.value
-  if (scrollArea) {
+  if (scrollArea)
     window.clearTimeout(timeout)
-    scrollArea.removeEventListener('pointerenter', handlePointerEnter)
-    scrollArea.removeEventListener('pointerleave', handlePointerLeave)
-  }
 })
 </script>
 

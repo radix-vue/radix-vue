@@ -1,4 +1,5 @@
 import { isClient } from '@vueuse/shared'
+import { useEventListener } from '@vueuse/core'
 import { handleAndDispatchCustomEvent } from '@/shared'
 import { type Ref, nextTick, ref, watchEffect } from 'vue'
 
@@ -30,12 +31,11 @@ function isLayerExist(layerElement: HTMLElement, targetElement: HTMLElement) {
     (targetLayer
     && mainLayer === targetLayer)
     || nodeList.indexOf(mainLayer) < nodeList.indexOf(targetLayer)
-  ) {
+  )
     return true
-  }
-  else {
+
+  else
     return false
-  }
 }
 
 /**
@@ -52,6 +52,9 @@ export function usePointerDownOutside(
 
   const isPointerInsideDOMTree = ref(false)
   const handleClickRef = ref(() => {})
+
+  let ownerDocumentClickCleanup: ReturnType<typeof useEventListener>
+  let ownerDocumentPointerdownCleanup: ReturnType<typeof useEventListener>
 
   watchEffect((cleanupFn) => {
     if (!isClient)
@@ -93,7 +96,7 @@ export function usePointerDownOutside(
         if (event.pointerType === 'touch') {
           ownerDocument.removeEventListener('click', handleClickRef.value)
           handleClickRef.value = handleAndDispatchPointerDownOutsideEvent
-          ownerDocument.addEventListener('click', handleClickRef.value, {
+          ownerDocumentClickCleanup = useEventListener(ownerDocument, 'click', handleClickRef.value, {
             once: true,
           })
         }
@@ -104,7 +107,7 @@ export function usePointerDownOutside(
       else {
         // We need to remove the event listener in case the outside click has been canceled.
         // See: https://github.com/radix-ui/primitives/issues/2171
-        ownerDocument.removeEventListener('click', handleClickRef.value)
+        ownerDocumentClickCleanup && ownerDocumentClickCleanup()
       }
       isPointerInsideDOMTree.value = false
     }
@@ -122,13 +125,12 @@ export function usePointerDownOutside(
      * });
      */
     const timerId = window.setTimeout(() => {
-      ownerDocument.addEventListener('pointerdown', handlePointerDown)
+      ownerDocumentPointerdownCleanup = useEventListener(ownerDocument, 'pointerdown', handlePointerDown)
     }, 0)
 
     cleanupFn(() => {
       window.clearTimeout(timerId)
-      ownerDocument.removeEventListener('pointerdown', handlePointerDown)
-      ownerDocument.removeEventListener('click', handleClickRef.value)
+      ownerDocumentPointerdownCleanup && ownerDocumentPointerdownCleanup()
     })
   })
 
@@ -147,6 +149,8 @@ export function useFocusOutside(
 ) {
   const ownerDocument: Document
     = element?.value?.ownerDocument ?? globalThis?.document
+
+  let ownerDocumentFocusinCleanup: ReturnType<typeof useEventListener>
 
   const isFocusInsideDOMTree = ref(false)
   watchEffect((cleanupFn) => {
@@ -170,9 +174,9 @@ export function useFocusOutside(
       }
     }
 
-    ownerDocument.addEventListener('focusin', handleFocus)
+    ownerDocumentFocusinCleanup = useEventListener(ownerDocument, 'focusin', handleFocus)
 
-    cleanupFn(() => ownerDocument.removeEventListener('focusin', handleFocus))
+    cleanupFn(() => ownerDocumentFocusinCleanup())
   })
 
   return {

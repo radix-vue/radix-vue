@@ -48,7 +48,7 @@ import { Primitive } from '@/Primitive'
 import { computed, onMounted, onUnmounted, ref, watch, watchEffect } from 'vue'
 import { injectToastProviderContext } from './ToastProvider.vue'
 import { TOAST_SWIPE_CANCEL, TOAST_SWIPE_END, TOAST_SWIPE_MOVE, TOAST_SWIPE_START, VIEWPORT_PAUSE, VIEWPORT_RESUME, getAnnounceTextContent, handleAndDispatchCustomEvent, isDeltaInDirection } from './utils'
-import { onKeyStroke, useRafFn } from '@vueuse/core'
+import { onKeyStroke, useEventListener, useRafFn } from '@vueuse/core'
 import ToastAnnounce from './ToastAnnounce.vue'
 
 defineOptions({
@@ -110,7 +110,7 @@ if (props.type && !['foreground', 'background'].includes(props.type)) {
   throw new Error(error)
 }
 
-watchEffect((cleanupFn) => {
+watchEffect((onCleanup) => {
   const viewport = providerContext.viewport.value
   if (viewport) {
     const handleResume = () => {
@@ -125,12 +125,14 @@ watchEffect((cleanupFn) => {
       remainingRaf.pause()
       emits('pause')
     }
-    viewport.addEventListener(VIEWPORT_PAUSE, handlePause)
-    viewport.addEventListener(VIEWPORT_RESUME, handleResume)
-    return () => {
-      viewport.removeEventListener(VIEWPORT_PAUSE, handlePause)
-      viewport.removeEventListener(VIEWPORT_RESUME, handleResume)
-    }
+
+    const viewportPauseCleanup = useEventListener(viewport, VIEWPORT_PAUSE, handlePause)
+    const viewportResumeCleanup = useEventListener(viewport, VIEWPORT_RESUME, handleResume)
+
+    onCleanup(() => {
+      viewportPauseCleanup()
+      viewportResumeCleanup()
+    })
   }
 })
 
@@ -243,9 +245,9 @@ provideToastRootContext({ onClose: handleClose })
           }
           // Prevent click event from triggering on items within the toast when
           // pointer up is part of a swipe gesture
-          toast?.addEventListener('click', (event) => event.preventDefault(), {
+          useEventListener(() => toast, 'click', (event) => event.preventDefault(), {
             once: true,
-          });
+          })
         }
       }"
     >
