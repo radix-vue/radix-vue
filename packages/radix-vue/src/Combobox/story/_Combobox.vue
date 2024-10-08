@@ -1,11 +1,12 @@
-<script setup lang="ts">
+<script setup lang="ts" generic="T = AcceptableValue, TMultiple = boolean">
 import { ref } from 'vue'
 import { ComboboxAnchor, ComboboxContent, ComboboxEmpty, ComboboxGroup, ComboboxInput, ComboboxItem, ComboboxItemIndicator, ComboboxLabel, ComboboxRoot, type ComboboxRootEmits, type ComboboxRootProps, ComboboxSeparator, ComboboxTrigger, ComboboxViewport } from '../'
 import { Icon } from '@iconify/vue'
 import { useForwardPropsEmits } from '@/shared'
+import type { AcceptableValue } from '@/shared/types'
 
-const props = defineProps<ComboboxRootProps>()
-const emits = defineEmits<ComboboxRootEmits>()
+const props = defineProps<ComboboxRootProps<T, TMultiple>>()
+const emits = defineEmits<ComboboxRootEmits<T, TMultiple>>()
 
 const forwarded = useForwardPropsEmits(props, emits)
 const v = ref<any>(props.multiple ? [] : '')
