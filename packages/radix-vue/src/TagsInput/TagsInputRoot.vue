@@ -174,8 +174,10 @@ provideTagsInputRootContext({
       case 'ArrowLeft': {
         const isArrowRight = (event.key === 'ArrowRight' && dir.value === 'ltr') || (event.key === 'ArrowLeft' && dir.value === 'rtl')
         const isArrowLeft = !isArrowRight
-        // only focus on tags when cursor is at the first position
-        if (target.selectionStart !== 0 || target.selectionEnd !== 0)
+
+        // prevent tag focus when there's something in the input
+        // the user must clear the input if he needs to clear already added tags
+        if (target.value.length > 0)
           break
 
         // if you press ArrowLeft, then we last tag

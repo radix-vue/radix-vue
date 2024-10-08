@@ -55,6 +55,12 @@ function handleKeyDown(ev: KeyboardEvent) {
 }
 
 function handleHomeEnd(ev: KeyboardEvent) {
+  // allow default input behavior when element has a value
+  if(ev.target.value?.length > 0)
+    return
+
+  ev.preventDefault()
+
   if (!rootContext.open.value)
     return
   rootContext.onInputNavigation(ev.key === 'Home' ? 'home' : 'end')
@@ -87,7 +93,7 @@ function handleInput(event: Event) {
     @input="handleInput"
     @keydown.down.up.prevent="handleKeyDown"
     @keydown.enter="rootContext.onInputEnter"
-    @keydown.home.end.prevent="handleHomeEnd"
+    @keydown.home.end="handleHomeEnd"
   >
     <slot />
   </Primitive>
