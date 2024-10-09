@@ -13,28 +13,28 @@
     "typescript": "*"
   },
   "dependencies": {
-    "@internationalized/date": "^3.5.4",
-    "@stackblitz/sdk": "^1.10.0",
-    "@vueuse/core": "^10.11.0",
+    "@internationalized/date": "^3.5.6",
+    "@stackblitz/sdk": "^1.11.0",
+    "@vueuse/core": "^10.11.1",
     "radix-vue": "link:../packages/radix-vue",
     "vue": "3.4.31",
     "vue-sonner": "^1.1.3"
   },
   "devDependencies": {
-    "@babel/traverse": "^7.24.7",
+    "@babel/traverse": "^7.25.7",
     "@iconify/vue": "^4.1.2",
     "@radix-ui/colors": "^3.0.0",
     "@types/babel__traverse": "^7.20.6",
-    "@types/markdown-it": "^14.1.1",
+    "@types/markdown-it": "^14.1.2",
     "@vue/tsconfig": "^0.5.1",
-    "autoprefixer": "^10.4.19",
+    "autoprefixer": "^10.4.20",
     "codesandbox": "^2.2.3",
     "fast-glob": "^3.3.2",
     "markdown-it": "^14.1.0",
-    "postcss": "^8.4.39",
-    "tailwindcss": "^3.4.4",
-    "tsx": "^4.16.0",
-    "vitepress": "1.2.3",
+    "postcss": "^8.4.47",
+    "tailwindcss": "^3.4.13",
+    "tsx": "^4.19.1",
+    "vitepress": "1.4.0",
     "vue-component-meta": "^2.0.24"
   },
   "postcss": {

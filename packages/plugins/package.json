@@ -18,11 +18,11 @@
     "stub": "unbuild --stub"
   },
   "dependencies": {
-    "@nuxt/kit": "^3.12.2",
-    "@nuxt/schema": "^3.12.2",
+    "@nuxt/kit": "^3.13.2",
+    "@nuxt/schema": "^3.13.2",
     "radix-vue": "link:../radix-vue",
-    "tsx": "^4.16.0",
+    "tsx": "^4.19.1",
     "unbuild": "^2.0.0",
-    "unplugin-vue-components": "^0.27.2"
+    "unplugin-vue-components": "^0.27.4"
   }
 }
