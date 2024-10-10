@@ -59,7 +59,7 @@ function handleClick() {
         </DropdownMenuItem>
         <DropdownMenuSub>
           <DropdownMenuSubTrigger
-            value="more toolsz"
+            value="more tools"
             class="DropdownMenuSubTrigger"
           >
             More Tools
@@ -173,7 +173,7 @@ function handleClick() {
               </DropdownMenuItem>
               <DropdownMenuSub>
                 <DropdownMenuSubTrigger
-                  value="more toolsz"
+                  value="more tools"
                   class="DropdownMenuSubTrigger"
                 >
                   More Tools
@@ -217,7 +217,7 @@ function handleClick() {
                     </DropdownMenuItem>
                     <DropdownMenuSub>
                       <DropdownMenuSubTrigger
-                        value="more toolsz"
+                        value="more tools"
                         class="DropdownMenuSubTrigger"
                       >
                         More Tools
