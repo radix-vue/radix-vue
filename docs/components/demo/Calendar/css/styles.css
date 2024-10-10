@@ -128,7 +128,7 @@
 }
 
 .CalendarCellTrigger[data-selected]::before {
-  background-color: #FFFFFF;
+  background-color: #ffffff;
 }
 
 .CalendarCellTrigger[data-unavailable] {
@@ -144,7 +144,7 @@
   width: 0.25rem;
   height: 0.25rem;
   border-radius: 9999px;
-  background-color: #FFFFFF;
+  background-color: #ffffff;
 }
 
 .CalendarCellTrigger[data-today]::before {
