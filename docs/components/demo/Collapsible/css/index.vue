@@ -16,6 +16,7 @@ const open = ref(false)
       <span class="Text"> @peduarte starred 3 repos </span>
       <CollapsibleTrigger
         class="IconButton"
+        :aria-expanded="open"
       >
         <Icon
           v-if="open"
