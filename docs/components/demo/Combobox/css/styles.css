@@ -14,7 +14,7 @@ button, input {
 .ComboboxAnchor {
   display: inline-flex;
   align-items: center;
-  justify-content: between; 
+  justify-content: space-between; 
   font-size: 13px;
   line-height: 1;
   height: 35px;
@@ -66,7 +66,7 @@ button, input {
   font-size: 0.75rem;
   line-height: 1rem;
   font-weight: 500; 
-  color: var(--mauve-11)
+  color: var(--mauve-11);
 }
 
 .ComboboxItem {
@@ -79,7 +79,7 @@ button, input {
   height: 25px;
   padding: 0 35px 0 25px;
   position: relative;
-  user-Combobox: none;
+  user-select: none;
 }
 .ComboboxItem[data-disabled] {
   color: var(--mauve-8);
