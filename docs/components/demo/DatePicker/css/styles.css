@@ -89,7 +89,6 @@
 .CalendarHeading {
   font-weight: 500;
   color: #000000;
-  color: 15px;
 }
 
 .CalendarWrapper {
@@ -166,7 +165,7 @@
 }
 
 .CalendarCellTrigger[data-disabled] {
-  cursor: none;
+  cursor: not-allowed;
   color: rgba(0,0,0,0.3);
 }
 
