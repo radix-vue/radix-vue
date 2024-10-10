@@ -50,7 +50,7 @@
 .ContextMenuRadioItem[data-disabled],
 .ContextMenuSubTrigger[data-disabled] {
   color: var(--mauve-8);
-  pointer-events: 'none';
+  pointer-events: none;
 }
 .ContextMenuItem[data-highlighted],
 .ContextMenuCheckboxItem[data-highlighted],
